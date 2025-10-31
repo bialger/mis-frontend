@@ -1,133 +1,111 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
-    <meta name="keywords" content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <meta name="description"
+        content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
+    <meta name="keywords"
+        content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
     <title>Медицинская CRM - Управление клиникой</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body bgcolor="#f8f9fa">
-    <header bgcolor="#2c3e50">
-        <nav>
-            <table width="100%" cellpadding="20" cellspacing="0" border="0" bgcolor="#2c3e50">
-                <tr>
-                    <td width="30%" align="left">
-                        <h1><font color="#ffffff" size="6">Медицинская CRM система</font></h1>
-                    </td>
-                    <td width="70%" align="right">
-                        <table cellpadding="5" cellspacing="10" border="0">
-                            <tr>
-                                <td><a href="#dashboard"><font color="#ffffff" size="3">Панель управления</font></a></td>
-                                <td><a href="#patients"><font color="#ffffff" size="3">Пациенты</font></a></td>
-                                <td><a href="#doctors"><font color="#ffffff" size="3">Врачи</font></a></td>
-                                <td><a href="#schedule"><font color="#ffffff" size="3">Расписание</font></a></td>
-                                <td><a href="#reports"><font color="#ffffff" size="3">Отчеты</font></a></td>
-                                <td><a href="#settings"><font color="#ffffff" size="3">Настройки</font></a></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </nav>
+
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Медицинская CRM система</h1>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#dashboard">Панель управления</a></li>
+                    <li><a href="#patients">Пациенты</a></li>
+                    <li><a href="#doctors">Врачи</a></li>
+                    <li><a href="#schedule">Расписание</a></li>
+                    <li><a href="#reports">Отчеты</a></li>
+                    <li><a href="#settings">Настройки</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <table width="100%" cellpadding="20" cellspacing="0" border="0" bgcolor="#f8f9fa">
-            <tr>
-                <td colspan="2" bgcolor="#ffffff" border="2" bordercolor="#2c3e50">
-                    <section id="dashboard">
-                        <h2><font color="#2c3e50" size="5">Панель управления</font></h2>
-                        <p><font color="#6c757d" size="3">Добро пожаловать в <strong><font color="#2c3e50">медицинскую CRM систему</font></strong> для управления клиникой и пациентами.</font></p>
-                    </section>
-                </td>
-            </tr>
-            
-            <tr>
-                <td width="75%" valign="top">
-                    <section id="patients">
-                        <h2><font color="#2c3e50" size="4">Управление пациентами</font></h2>
-                        
-                        <table width="100%" cellpadding="15" cellspacing="15" border="0">
-                            <tr>
-                                <td width="33%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                    <article>
-                                        <h3><font color="#2c3e50" size="3">Регистрация пациентов</font></h3>
-                                        <ul><font color="#6c757d" size="2">
-                                            <li>Добавление новых пациентов</li>
-                                            <li>Редактирование личных данных</li>
-                                            <li>История обращений</li>
-                                            <li>Медицинские карты</li>
-                                        </font></ul>
-                                    </article>
-                                </td>
-                                
-                                <td width="33%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                    <article>
-                                        <h3><font color="#2c3e50" size="3">Записи на прием</font></h3>
-                                        <ol><font color="#6c757d" size="2">
-                                            <li>Создание записи</li>
-                                            <li>Выбор врача и времени</li>
-                                            <li>Подтверждение записи</li>
-                                            <li>Напоминания пациентам</li>
-                                        </font></ol>
-                                    </article>
-                                </td>
-                                
-                                <td width="33%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                    <article>
-                                        <h3><font color="#2c3e50" size="3">Поиск и фильтрация</font></h3>
-                                        <p><font color="#6c757d" size="2">Быстрый поиск пациентов по <em><font color="#2c3e50">ФИО, телефону, дате рождения</font></em> и другим параметрам.</font></p>
-                                    </article>
-                                </td>
-                            </tr>
-                        </table>
-                    </section>
+        <section id="dashboard" class="dashboard">
+            <h2>Панель управления</h2>
+            <p>Добро пожаловать в <strong>медицинскую CRM систему</strong> для управления клиникой и пациентами.</p>
+        </section>
 
-                    <section id="doctors">
-                        <h2><font color="#2c3e50" size="4">Управление врачами</font></h2>
-                        <article>
-                            <table width="100%" cellpadding="15" cellspacing="15" border="0">
-                                <tr>
-                                    <td width="50%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Штат врачей</font></h3>
-                                        <p><font color="#6c757d" size="2">Главный врач: <strong><font color="#2c3e50">Иванов Иван Иванович</font></strong></font></p>
-                                        <p><font color="#6c757d" size="2">Стаж работы: <del><font color="#e74c3c">25 лет</font></del> <ins><font color="#27ae60">30 лет</font></ins></font></p>
-                                        <p><font color="#6c757d" size="2">Специализация: <em><font color="#2c3e50">Терапевт, кардиолог</font></em></font></p>
-                                    </td>
-                                    <td width="50%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Статистика врачей</font></h3>
-                                        <ul><font color="#6c757d" size="2">
-                                            <li>Всего врачей: <strong><font color="#2c3e50">15</font></strong></li>
-                                            <li>Активных специалистов: <strong><font color="#27ae60">12</font></strong></li>
-                                            <li>Средняя загруженность: <strong><font color="#f39c12">85%</font></strong></li>
-                                        </font></ul>
-                                    </td>
-                                </tr>
-                            </table>
+        <div class="content-wrapper">
+            <div class="main-content">
+                <section id="patients">
+                    <h2>Управление пациентами</h2>
+
+                    <div class="patients-grid">
+                        <article class="patient-card">
+                            <h3>Регистрация пациентов</h3>
+                            <ul>
+                                <li>Добавление новых пациентов</li>
+                                <li>Редактирование личных данных</li>
+                                <li>История обращений</li>
+                                <li>Медицинские карты</li>
+                            </ul>
                         </article>
-                    </section>
 
-                    <section id="schedule">
-                        <h2><font color="#2c3e50" size="4">Расписание и календарь</font></h2>
-                        <article>
-                            <table width="100%" cellpadding="15" cellspacing="15" border="0">
-                                <tr>
-                                    <td width="60%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Планирование работы</font></h3>
-                                        <p><font color="#6c757d" size="2">Управление расписанием врачей, кабинетами и медицинским оборудованием.</font></p>
-                                        
-                                        <h3><font color="#2c3e50" size="2">Принципы планирования</font></h3>
-                                        <blockquote cite="https://www.who.int/">
-                                            <p><font color="#6c757d" size="2"><i>"Эффективное планирование медицинских ресурсов - основа качественного оказания медицинской помощи."</i></font></p>
-                                            <cite><font color="#95a5a6" size="1">Руководство по управлению медицинскими учреждениями</font></cite>
-                                        </blockquote>
-                                    </td>
-                                    <td width="40%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Техническая реализация</font></h3>
-                                        <p><font color="#6c757d" size="2">Система использует современные технологии для управления расписанием:</font></p>
-                                        <pre bgcolor="#f8f9fa" border="1" bordercolor="#e9ecef"><code><font color="#2c3e50" size="1">
-// Структура записи на прием
+                        <article class="patient-card">
+                            <h3>Записи на прием</h3>
+                            <ol>
+                                <li>Создание записи</li>
+                                <li>Выбор врача и времени</li>
+                                <li>Подтверждение записи</li>
+                                <li>Напоминания пациентам</li>
+                            </ol>
+                        </article>
+
+                        <article class="patient-card">
+                            <h3>Поиск и фильтрация</h3>
+                            <p>Быстрый поиск пациентов по <em>ФИО, телефону, дате рождения</em> и другим параметрам.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="doctors">
+                    <h2>Управление врачами</h2>
+                    <div class="doctors-grid">
+                        <article class="doctor-card">
+                            <h3>Штат врачей</h3>
+                            <p>Главный врач: <strong>Иванов Иван Иванович</strong></p>
+                            <p>Стаж работы: <del>25 лет</del> <ins>30 лет</ins></p>
+                            <p>Специализация: <em>Терапевт, кардиолог</em></p>
+                        </article>
+                        <article class="doctor-card">
+                            <h3>Статистика врачей</h3>
+                            <ul>
+                                <li>Всего врачей: <strong>15</strong></li>
+                                <li>Активных специалистов: <strong>12</strong></li>
+                                <li>Средняя загруженность: <strong>85%</strong></li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="schedule">
+                    <h2>Расписание и календарь</h2>
+                    <div class="schedule-grid">
+                        <article class="schedule-card">
+                            <h3>Планирование работы</h3>
+                            <p>Управление расписанием врачей, кабинетами и медицинским оборудованием.</p>
+
+                            <h3>Принципы планирования</h3>
+                            <blockquote cite="https://www.who.int/">
+                                <p><i>"Эффективное планирование медицинских ресурсов - основа качественного оказания
+                                        медицинской помощи."</i></p>
+                                <cite>Руководство по управлению медицинскими учреждениями</cite>
+                            </blockquote>
+                        </article>
+                        <article class="schedule-card">
+                            <h3>Техническая реализация</h3>
+                            <p>Система использует современные технологии для управления расписанием:</p>
+                            <pre><code>// Структура записи на прием
 struct Appointment {
     string patientId;
     string doctorId;
@@ -135,90 +113,79 @@ struct Appointment {
     string room;
     string status;
     string notes;
-};
-                                        </font></code></pre>
-                                    </td>
-                                </tr>
-                            </table>
+};</code></pre>
                         </article>
-                    </section>
+                    </div>
+                </section>
 
-                    <section id="reports">
-                        <h2><font color="#2c3e50" size="4">Отчеты и аналитика</font></h2>
-                        <article>
-                            <table width="100%" cellpadding="15" cellspacing="15" border="0">
-                                <tr>
-                                    <td width="50%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Статистика работы</font></h3>
-                                        <ul><font color="#6c757d" size="2">
-                                            <li>Количество пациентов за период</li>
-                                            <li>Загруженность врачей</li>
-                                            <li>Финансовые отчеты</li>
-                                            <li>Анализ эффективности</li>
-                                        </font></ul>
-                                    </td>
-                                    <td width="50%" valign="top" bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                                        <h3><font color="#2c3e50" size="3">Ключевые показатели</font></h3>
-                                        <ul><font color="#6c757d" size="2">
-                                            <li>Среднее время приема: <strong><font color="#f39c12">30 мин</font></strong></li>
-                                            <li>Процент отмен записей: <strong><font color="#e74c3c">5%</font></strong></li>
-                                            <li>Удовлетворенность пациентов: <strong><font color="#27ae60">95%</font></strong></li>
-                                            <li>Заполненность расписания: <strong><font color="#3498db">90%</font></strong></li>
-                                        </font></ul>
-                                    </td>
-                                </tr>
-                            </table>
+                <section id="reports">
+                    <h2>Отчеты и аналитика</h2>
+                    <div class="reports-grid">
+                        <article class="report-card">
+                            <h3>Статистика работы</h3>
+                            <ul>
+                                <li>Количество пациентов за период</li>
+                                <li>Загруженность врачей</li>
+                                <li>Финансовые отчеты</li>
+                                <li>Анализ эффективности</li>
+                            </ul>
                         </article>
-                    </section>
-                </td>
-                
-                <td width="25%" valign="top">
-                    <aside bgcolor="#ffffff" border="1" bordercolor="#e9ecef">
-                        <h3><font color="#2c3e50" size="3">Уведомления системы</font></h3>
-                        <ul><font color="#6c757d" size="2">
-                            <li>Новые записи на прием</li>
-                            <li>Отмена записей</li>
-                            <li>Системные обновления</li>
-                            <li>Резервное копирование данных</li>
-                        </font></ul>
-                        
-                        <h3><font color="#2c3e50" size="3">Быстрые действия</font></h3>
-                        <ul><font color="#6c757d" size="2">
-                            <li>Добавить пациента</li>
-                            <li>Создать запись</li>
-                            <li>Просмотреть расписание</li>
-                            <li>Сформировать отчет</li>
-                        </font></ul>
-                        
-                        <h3><font color="#2c3e50" size="3">Статус системы</font></h3>
-                        <ul><font color="#6c757d" size="2">
-                            <li>База данных: <strong><font color="#27ae60">Активна</font></strong></li>
-                            <li>Резервное копирование: <strong><font color="#27ae60">Выполнено</font></strong></li>
-                            <li>Последняя синхронизация: <em><font color="#95a5a6">2 мин назад</font></em></li>
-                        </font></ul>
-                    </aside>
-                </td>
-            </tr>
-        </table>
+                        <article class="report-card">
+                            <h3>Ключевые показатели</h3>
+                            <ul>
+                                <li>Среднее время приема: <strong>30 мин</strong></li>
+                                <li>Процент отмен записей: <strong>5%</strong></li>
+                                <li>Удовлетворенность пациентов: <strong>95%</strong></li>
+                                <li>Заполненность расписания: <strong>90%</strong></li>
+                            </ul>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <aside>
+                <h3>Уведомления системы</h3>
+                <ul>
+                    <li>Новые записи на прием</li>
+                    <li>Отмена записей</li>
+                    <li>Системные обновления</li>
+                    <li>Резервное копирование данных</li>
+                </ul>
+
+                <h3>Быстрые действия</h3>
+                <ul>
+                    <li>Добавить пациента</li>
+                    <li>Создать запись</li>
+                    <li>Просмотреть расписание</li>
+                    <li>Сформировать отчет</li>
+                </ul>
+
+                <h3>Статус системы</h3>
+                <ul>
+                    <li>База данных: <strong>Активна</strong></li>
+                    <li>Резервное копирование: <strong>Выполнено</strong></li>
+                    <li>Последняя синхронизация: <em>2 мин назад</em></li>
+                </ul>
+            </aside>
+        </div>
     </main>
 
-    <footer id="settings" bgcolor="#2c3e50">
-        <table width="100%" cellpadding="30" cellspacing="0" border="0" bgcolor="#2c3e50">
-            <tr>
-                <td width="60%" align="left">
-                    <h3><font color="#ffffff" size="4">Системная информация</font></h3>
-                    <address>
-                        <p><font color="#bdc3c7" size="2">Версия системы: <strong><font color="#3498db">1.0.0</font></strong></font></p>
-                        <p><font color="#bdc3c7" size="2">Последнее обновление: <strong><font color="#3498db">2025-10-03</font></strong></font></p>
-                        <p><font color="#bdc3c7" size="2">Техническая поддержка: <strong><font color="#3498db">support@medcrm.local</font></strong></font></p>
-                        <p><font color="#bdc3c7" size="2">Статус системы: <strong><font color="#27ae60">Активна</font></strong></font></p>
-                    </address>
-                </td>
-                <td width="40%" align="right" valign="bottom">
-                    <p><font color="#95a5a6" size="1">&copy; 2025 Self-hosted Medical CRM. Все права защищены.</font></p>
-                </td>
-            </tr>
-        </table>
+    <footer id="settings">
+        <div class="footer-container">
+            <div class="footer-info">
+                <h3>Системная информация</h3>
+                <address>
+                    <p>Версия системы: <strong>1.0.0</strong></p>
+                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
+                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
+                    <p>Статус системы: <strong>Активна</strong></p>
+                </address>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
+            </div>
+        </div>
     </footer>
 </body>
+
 </html>
