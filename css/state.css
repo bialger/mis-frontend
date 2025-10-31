@@ -1,0 +1,45 @@
+.is-hoverable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.is-hoverable-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.is-hoverable-button:hover {
+    background-color: rgb(41, 128, 185);
+    transform: translateY(-1px);
+}
+
+.is-hoverable-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.m-gallery-item:hover {
+    transform: scale(1.05);
+}
+
+.m-table tbody tr:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.is-active-button:active {
+    transform: translateY(0);
+}
+
+.is-focusable:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.is-hidden {
+    display: none;
+}
+
+.is-hidden-mobile {
+    display: block;
+}
+

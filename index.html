@@ -9,39 +9,43 @@
     <meta name="keywords"
         content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
     <title>Медицинская CRM - Управление клиникой</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
-    <header>
-        <div class="header-container">
+    <header class="l-header">
+        <div class="l-header-container">
             <h1>Медицинская CRM система</h1>
             <nav>
-                <ul class="nav-menu">
-                    <li><a href="#dashboard">Панель управления</a></li>
-                    <li><a href="#patients">Пациенты</a></li>
-                    <li><a href="#doctors">Врачи</a></li>
-                    <li><a href="#schedule">Расписание</a></li>
-                    <li><a href="#reports">Отчеты</a></li>
-                    <li><a href="#settings">Настройки</a></li>
+                <ul class="m-nav-menu">
+                    <li><a href="#dashboard" class="is-hoverable-link">Панель управления</a></li>
+                    <li><a href="#patients" class="is-hoverable-link">Пациенты</a></li>
+                    <li><a href="#doctors" class="is-hoverable-link">Врачи</a></li>
+                    <li><a href="#schedule" class="is-hoverable-link">Расписание</a></li>
+                    <li><a href="#reports" class="is-hoverable-link">Отчеты</a></li>
+                    <li><a href="#settings" class="is-hoverable-link">Настройки</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main>
-        <section id="dashboard" class="dashboard">
+    <main class="l-main">
+        <section id="dashboard" class="m-dashboard">
             <h2>Панель управления</h2>
             <p>Добро пожаловать в <strong>медицинскую CRM систему</strong> для управления клиникой и пациентами.</p>
         </section>
 
-        <div class="content-wrapper">
-            <div class="main-content">
-                <section id="patients">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section id="patients" class="m-section">
                     <h2>Управление пациентами</h2>
 
-                    <div class="patients-grid">
-                        <article class="patient-card">
+                    <div class="m-grid m-grid--patients">
+                        <article class="m-card is-hoverable">
                             <h3>Регистрация пациентов</h3>
                             <ul>
                                 <li>Добавление новых пациентов</li>
@@ -51,7 +55,7 @@
                             </ul>
                         </article>
 
-                        <article class="patient-card">
+                        <article class="m-card is-hoverable">
                             <h3>Записи на прием</h3>
                             <ol>
                                 <li>Создание записи</li>
@@ -61,23 +65,51 @@
                             </ol>
                         </article>
 
-                        <article class="patient-card">
+                        <article class="m-card is-hoverable">
                             <h3>Поиск и фильтрация</h3>
                             <p>Быстрый поиск пациентов по <em>ФИО, телефону, дате рождения</em> и другим параметрам.</p>
                         </article>
                     </div>
+
+                    <h3 style="margin-top: 2rem;">Галерея оборудования</h3>
+                    <div class="m-gallery">
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/3498db/ffffff?text=Кабинет+1"
+                                alt="Медицинский кабинет 1">
+                        </div>
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/27ae60/ffffff?text=Кабинет+2"
+                                alt="Медицинский кабинет 2">
+                        </div>
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/e74c3c/ffffff?text=Кабинет+3"
+                                alt="Медицинский кабинет 3">
+                        </div>
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/f39c12/ffffff?text=Кабинет+4"
+                                alt="Медицинский кабинет 4">
+                        </div>
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/9b59b6/ffffff?text=Кабинет+5"
+                                alt="Медицинский кабинет 5">
+                        </div>
+                        <div class="m-gallery-item">
+                            <img src="https://via.placeholder.com/300x300/1abc9c/ffffff?text=Кабинет+6"
+                                alt="Медицинский кабинет 6">
+                        </div>
+                    </div>
                 </section>
 
-                <section id="doctors">
+                <section id="doctors" class="m-section">
                     <h2>Управление врачами</h2>
-                    <div class="doctors-grid">
-                        <article class="doctor-card">
+                    <div class="m-grid m-grid--doctors">
+                        <article class="m-card is-hoverable">
                             <h3>Штат врачей</h3>
                             <p>Главный врач: <strong>Иванов Иван Иванович</strong></p>
                             <p>Стаж работы: <del>25 лет</del> <ins>30 лет</ins></p>
                             <p>Специализация: <em>Терапевт, кардиолог</em></p>
                         </article>
-                        <article class="doctor-card">
+                        <article class="m-card is-hoverable">
                             <h3>Статистика врачей</h3>
                             <ul>
                                 <li>Всего врачей: <strong>15</strong></li>
@@ -86,26 +118,88 @@
                             </ul>
                         </article>
                     </div>
+
+                    <h3 style="margin-top: 2rem;">Расписание врачей</h3>
+                    <table class="m-table">
+                        <thead>
+                            <tr>
+                                <th>Врач</th>
+                                <th>Специализация</th>
+                                <th>Понедельник</th>
+                                <th>Вторник</th>
+                                <th>Среда</th>
+                                <th>Четверг</th>
+                                <th>Пятница</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Иванов И.И.</td>
+                                <td>Терапевт</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                            </tr>
+                            <tr>
+                                <td>Петрова А.В.</td>
+                                <td>Кардиолог</td>
+                                <td>10:00-18:00</td>
+                                <td>10:00-18:00</td>
+                                <td>—</td>
+                                <td>10:00-18:00</td>
+                                <td>10:00-18:00</td>
+                            </tr>
+                            <tr>
+                                <td>Сидоров П.М.</td>
+                                <td>Невролог</td>
+                                <td>08:00-16:00</td>
+                                <td>08:00-16:00</td>
+                                <td>08:00-16:00</td>
+                                <td>—</td>
+                                <td>08:00-16:00</td>
+                            </tr>
+                            <tr>
+                                <td>Козлова Е.А.</td>
+                                <td>Педиатр</td>
+                                <td>09:00-17:00</td>
+                                <td>—</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                            </tr>
+                            <tr>
+                                <td>Морозов Д.С.</td>
+                                <td>Хирург</td>
+                                <td>—</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </section>
 
-                <section id="schedule">
+                <section id="schedule" class="m-section">
                     <h2>Расписание и календарь</h2>
-                    <div class="schedule-grid">
-                        <article class="schedule-card">
+                    <div class="m-grid m-grid--schedule">
+                        <article class="m-card is-hoverable">
                             <h3>Планирование работы</h3>
                             <p>Управление расписанием врачей, кабинетами и медицинским оборудованием.</p>
 
                             <h3>Принципы планирования</h3>
-                            <blockquote cite="https://www.who.int/">
+                            <blockquote class="m-blockquote" cite="https://www.who.int/">
                                 <p><i>"Эффективное планирование медицинских ресурсов - основа качественного оказания
                                         медицинской помощи."</i></p>
                                 <cite>Руководство по управлению медицинскими учреждениями</cite>
                             </blockquote>
                         </article>
-                        <article class="schedule-card">
+                        <article class="m-card is-hoverable">
                             <h3>Техническая реализация</h3>
                             <p>Система использует современные технологии для управления расписанием:</p>
-                            <pre><code>// Структура записи на прием
+                            <pre class="m-code"><code>// Структура записи на прием
 struct Appointment {
     string patientId;
     string doctorId;
@@ -118,10 +212,10 @@ struct Appointment {
                     </div>
                 </section>
 
-                <section id="reports">
+                <section id="reports" class="m-section">
                     <h2>Отчеты и аналитика</h2>
-                    <div class="reports-grid">
-                        <article class="report-card">
+                    <div class="m-grid m-grid--reports">
+                        <article class="m-card is-hoverable">
                             <h3>Статистика работы</h3>
                             <ul>
                                 <li>Количество пациентов за период</li>
@@ -130,7 +224,7 @@ struct Appointment {
                                 <li>Анализ эффективности</li>
                             </ul>
                         </article>
-                        <article class="report-card">
+                        <article class="m-card is-hoverable">
                             <h3>Ключевые показатели</h3>
                             <ul>
                                 <li>Среднее время приема: <strong>30 мин</strong></li>
@@ -143,7 +237,7 @@ struct Appointment {
                 </section>
             </div>
 
-            <aside>
+            <aside class="m-aside">
                 <h3>Уведомления системы</h3>
                 <ul>
                     <li>Новые записи на прием</li>
@@ -170,9 +264,9 @@ struct Appointment {
         </div>
     </main>
 
-    <footer id="settings">
-        <div class="footer-container">
-            <div class="footer-info">
+    <footer id="settings" class="l-footer">
+        <div class="l-footer-container">
+            <div class="l-footer-info">
                 <h3>Системная информация</h3>
                 <address>
                     <p>Версия системы: <strong>1.0.0</strong></p>
@@ -181,9 +275,13 @@ struct Appointment {
                     <p>Статус системы: <strong>Активна</strong></p>
                 </address>
             </div>
-            <div class="footer-copyright">
+            <div class="l-footer-copyright">
                 <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
             </div>
+        </div>
+        <div class="l-footer-banner is-hidden-mobile">
+            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
+            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
         </div>
     </footer>
 </body>
