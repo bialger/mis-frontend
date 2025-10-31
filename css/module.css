@@ -129,8 +129,7 @@
 .m-grid--reports {
     grid-template-columns: 1fr 1fr;
 }
-
-/* Module: Gallery */
+и
 .m-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -153,7 +152,74 @@
     border-radius: 8px;
 }
 
-/* Module: Table */
+.m-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.m-service-card {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.m-service-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.m-service-description {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.m-service-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.m-service-price {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+}
+
+.m-service-price strong {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.m-service-duration {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
+.m-service-specialty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    align-self: flex-start;
+}
+
 .m-table {
     display: grid;
     border: 1px solid var(--border-color);
@@ -181,6 +247,11 @@
 
 .m-table tbody tr {
     grid-template-columns: repeat(7, minmax(100px, 1fr));
+}
+
+.m-table.m-table--services thead tr,
+.m-table.m-table--services tbody tr {
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
 }
 
 .m-table th,
@@ -217,7 +288,6 @@
     border-bottom: none;
 }
 
-/* Module: Aside */
 .m-aside {
     background-color: var(--white);
     padding: 2rem;
@@ -253,7 +323,6 @@
     font-style: italic;
 }
 
-/* Module: Blockquote */
 .m-blockquote {
     background-color: var(--light-color);
     border-left: 4px solid var(--secondary-color);

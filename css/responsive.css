@@ -62,8 +62,17 @@
         grid-template-columns: 1fr 1fr;
     }
     
+    .m-services-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .m-table thead tr,
     .m-table tbody tr {
+        grid-template-columns: 1fr;
+    }
+    
+    .m-table.m-table--services thead tr,
+    .m-table.m-table--services tbody tr {
         grid-template-columns: 1fr;
     }
     
@@ -140,6 +149,10 @@
         grid-template-columns: repeat(3, 1fr);
     }
     
+    .m-services-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
     .l-footer-container {
         flex-direction: column;
         text-align: center;
@@ -173,9 +186,18 @@
         grid-template-columns: repeat(4, 1fr);
     }
     
+    .m-services-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
     .m-table thead tr,
     .m-table tbody tr {
         grid-template-columns: repeat(7, minmax(120px, 1fr));
+    }
+    
+    .m-table.m-table--services thead tr,
+    .m-table.m-table--services tbody tr {
+        grid-template-columns: repeat(5, minmax(150px, 1fr));
     }
 }
 
@@ -202,9 +224,18 @@
         grid-template-columns: repeat(6, 1fr);
     }
     
+    .m-services-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    
     .m-table thead tr,
     .m-table tbody tr {
         grid-template-columns: repeat(7, minmax(180px, 1fr));
+    }
+    
+    .m-table.m-table--services thead tr,
+    .m-table.m-table--services tbody tr {
+        grid-template-columns: repeat(5, minmax(200px, 1fr));
     }
 }
 
@@ -231,9 +262,18 @@
         grid-template-columns: repeat(8, 1fr);
     }
     
+    .m-services-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    
     .m-table thead tr,
     .m-table tbody tr {
         grid-template-columns: repeat(7, minmax(250px, 1fr));
+    }
+    
+    .m-table.m-table--services thead tr,
+    .m-table.m-table--services tbody tr {
+        grid-template-columns: repeat(5, minmax(250px, 1fr));
     }
     
     .l-content-wrapper {
