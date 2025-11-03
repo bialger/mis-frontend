@@ -1,0 +1,433 @@
+.m-nav-menu {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.m-nav-menu li {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.m-nav-menu a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    display: block;
+}
+
+.m-dashboard {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 2px solid var(--primary-color);
+}
+
+.m-dashboard p {
+    color: var(--muted-color);
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.m-dashboard strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.m-section {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.m-card {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.m-card h3 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.m-card p {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.m-card ul,
+.m-card ol {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+}
+
+.m-card li {
+    margin-bottom: 0.5rem;
+}
+
+.m-card strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.m-card em {
+    color: var(--primary-color);
+    font-style: italic;
+    font-weight: 500;
+}
+
+.m-card del {
+    color: var(--danger-color);
+    text-decoration: line-through;
+}
+
+.m-card ins {
+    color: var(--success-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Module: Grid */
+.m-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.m-grid--patients {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.m-grid--doctors {
+    grid-template-columns: 1fr 1fr;
+}
+
+.m-grid--schedule {
+    grid-template-columns: 2fr 1fr;
+}
+
+.m-grid--reports {
+    grid-template-columns: 1fr 1fr;
+}
+и
+.m-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.m-gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    aspect-ratio: 1;
+    background-color: var(--light-color);
+}
+
+.m-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.m-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.m-service-card {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.m-service-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.m-service-description {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.m-service-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.m-service-price {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+}
+
+.m-service-price strong {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.m-service-duration {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
+.m-service-specialty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    align-self: flex-start;
+}
+
+.m-table {
+    display: grid;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.m-table thead {
+    display: contents;
+}
+
+.m-table tbody {
+    display: contents;
+}
+
+.m-table tr {
+    display: grid;
+    grid-column: 1 / -1;
+}
+
+.m-table thead tr {
+    grid-template-columns: repeat(7, minmax(100px, 1fr));
+}
+
+.m-table tbody tr {
+    grid-template-columns: repeat(7, minmax(100px, 1fr));
+}
+
+.m-table.m-table--services thead tr,
+.m-table.m-table--services tbody tr {
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
+}
+
+.m-table th,
+.m-table td {
+    padding: 1rem;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.m-table th:last-child,
+.m-table td:last-child {
+    border-right: none;
+}
+
+.m-table th {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: 600;
+    text-align: left;
+}
+
+.m-table tbody tr:nth-child(even) {
+    background-color: var(--light-color);
+}
+
+.m-table tbody tr:nth-child(odd) {
+    background-color: var(--white);
+}
+
+.m-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.m-aside {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    height: fit-content;
+}
+
+.m-aside h3 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.m-aside ul {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.m-aside li {
+    margin-bottom: 0.5rem;
+}
+
+.m-aside strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.m-aside em {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.m-blockquote {
+    background-color: var(--light-color);
+    border-left: 4px solid var(--secondary-color);
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.m-blockquote p {
+    color: var(--muted-color);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.m-blockquote cite {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-style: normal;
+}
+
+/* Module: Code */
+.m-code {
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.m-code code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    line-height: 1.4;
+}
+
+/* Module: Button */
+.m-button {
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Module: Form */
+.m-input,
+.m-textarea,
+.m-select {
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--white);
+}
+
+/* Utility classes */
+.u-text-center {
+    text-align: center;
+}
+
+.u-text-uppercase {
+    text-transform: uppercase;
+}
+
+.u-text-lowercase {
+    text-transform: lowercase;
+}
+
+.u-text-capitalize {
+    text-transform: capitalize;
+}
+
+.u-font-weight-light {
+    font-weight: 300;
+}
+
+.u-font-weight-normal {
+    font-weight: 400;
+}
+
+.u-font-weight-medium {
+    font-weight: 500;
+}
+
+.u-font-weight-bold {
+    font-weight: 700;
+}
+
+.u-text-decoration-underline {
+    text-decoration: underline;
+}
+
+.u-text-decoration-line-through {
+    text-decoration: line-through;
+}
+
+.u-text-decoration-none {
+    text-decoration: none;
+}
+
