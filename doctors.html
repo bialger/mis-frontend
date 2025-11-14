@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
+    <meta name="keywords"
+        content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <title>Медицинская CRM - Врачи</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+    <header class="l-header">
+        <div class="l-header-container">
+            <h1>Медицинская CRM система</h1>
+            <nav>
+                <ul class="m-nav-menu">
+                    <li><a href="index.html" class="is-hoverable-link">Панель управления</a></li>
+                    <li><a href="patients.html" class="is-hoverable-link">Пациенты</a></li>
+                    <li><a href="doctors.html" class="is-hoverable-link">Врачи</a></li>
+                    <li><a href="schedule.html" class="is-hoverable-link">Расписание</a></li>
+                    <li><a href="reports.html" class="is-hoverable-link">Отчеты</a></li>
+                    <li><a href="settings.html" class="is-hoverable-link">Настройки</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="l-main">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-section">
+                    <h2>Управление врачами</h2>
+                    <div class="m-grid m-grid--doctors">
+                        <article class="m-card is-hoverable">
+                            <h3>Штат врачей</h3>
+                            <p>Главный врач: <strong>Иванов Иван Иванович</strong></p>
+                            <p>Стаж работы: <del>25 лет</del> <ins>30 лет</ins></p>
+                            <p>Специализация: <em>Терапевт, кардиолог</em></p>
+                        </article>
+                        <article class="m-card is-hoverable">
+                            <h3>Статистика врачей</h3>
+                            <ul>
+                                <li>Всего врачей: <strong>15</strong></li>
+                                <li>Активных специалистов: <strong>12</strong></li>
+                                <li>Средняя загруженность: <strong>85%</strong></li>
+                            </ul>
+                        </article>
+                    </div>
+
+                    <h3 style="margin-top: 2rem;">Расписание врачей</h3>
+                    <table class="m-table">
+                        <thead>
+                            <tr>
+                                <th>Врач</th>
+                                <th>Специализация</th>
+                                <th>Понедельник</th>
+                                <th>Вторник</th>
+                                <th>Среда</th>
+                                <th>Четверг</th>
+                                <th>Пятница</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Иванов И.И.</td>
+                                <td>Терапевт</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                            </tr>
+                            <tr>
+                                <td>Петрова А.В.</td>
+                                <td>Кардиолог</td>
+                                <td>10:00-18:00</td>
+                                <td>10:00-18:00</td>
+                                <td>—</td>
+                                <td>10:00-18:00</td>
+                                <td>10:00-18:00</td>
+                            </tr>
+                            <tr>
+                                <td>Сидоров П.М.</td>
+                                <td>Невролог</td>
+                                <td>08:00-16:00</td>
+                                <td>08:00-16:00</td>
+                                <td>08:00-16:00</td>
+                                <td>—</td>
+                                <td>08:00-16:00</td>
+                            </tr>
+                            <tr>
+                                <td>Козлова Е.А.</td>
+                                <td>Педиатр</td>
+                                <td>09:00-17:00</td>
+                                <td>—</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                                <td>09:00-17:00</td>
+                            </tr>
+                            <tr>
+                                <td>Морозов Д.С.</td>
+                                <td>Хирург</td>
+                                <td>—</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                                <td>11:00-19:00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <aside class="m-aside">
+                <h3>Уведомления системы</h3>
+                <ul>
+                    <li>Новые записи на прием</li>
+                    <li>Отмена записей</li>
+                    <li>Системные обновления</li>
+                    <li>Резервное копирование данных</li>
+                </ul>
+
+                <h3>Быстрые действия</h3>
+                <ul>
+                    <li>Добавить пациента</li>
+                    <li>Создать запись</li>
+                    <li>Просмотреть расписание</li>
+                    <li>Сформировать отчет</li>
+                </ul>
+
+                <h3>Статус системы</h3>
+                <ul>
+                    <li>База данных: <strong>Активна</strong></li>
+                    <li>Резервное копирование: <strong>Выполнено</strong></li>
+                    <li>Последняя синхронизация: <em>2 мин назад</em></li>
+                </ul>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="l-footer">
+        <div class="l-footer-container">
+            <div class="l-footer-info">
+                <h3>Системная информация</h3>
+                <address>
+                    <p>Версия системы: <strong>1.0.0</strong></p>
+                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
+                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
+                    <p>Статус системы: <strong>Активна</strong></p>
+                </address>
+            </div>
+            <div class="l-footer-copyright">
+                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
+            </div>
+        </div>
+        <div class="l-footer-banner is-hidden-mobile">
+            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
+            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
+        </div>
+    </footer>
+</body>
+
+</html>
+
