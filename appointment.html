@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Self-hosted CRM система для медицинских клиник - запись на услуги">
+    <meta name="keywords"
+        content="медицинская CRM, запись на прием, услуги, расписание">
+    <title>Медицинская CRM - Записи на услуги</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/main.js"></script>
+    <script src="js/appointment.js"></script>
+</head>
+
+<body>
+    <header class="l-header">
+        <div class="l-header-container">
+            <h1>Медицинская CRM система</h1>
+            <nav>
+                <ul class="m-nav-menu">
+                    <li><a href="index.html" class="is-hoverable-link">Панель управления</a></li>
+                    <li><a href="patients.html" class="is-hoverable-link">Пациенты</a></li>
+                    <li><a href="doctors.html" class="is-hoverable-link">Врачи</a></li>
+                    <li><a href="schedule.html" class="is-hoverable-link">Расписание</a></li>
+                    <li><a href="reports.html" class="is-hoverable-link">Отчеты</a></li>
+                    <li><a href="settings.html" class="is-hoverable-link">Настройки</a></li>
+                    <li><a href="appointment.html" class="is-hoverable-link">Записи на услуги</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="l-main">
+        <section class="m-section">
+            <h2>Создание записи на услугу</h2>
+            <p>Заполните форму для создания новой записи пациента на медицинскую услугу.</p>
+
+            <form id="appointment-form" class="m-appointment-form" novalidate>
+                <div class="m-form-group">
+                    <label for="fullname" class="m-form-label">ФИО пациента <span class="m-form-required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="fullname" 
+                        name="fullname" 
+                        class="m-input is-focusable" 
+                        required 
+                        minlength="3"
+                        maxlength="100"
+                        pattern="[А-Яа-яЁёA-Za-z\s]+"
+                        placeholder="Иванов Иван Иванович">
+                    <span class="m-form-error" id="fullname-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="phone" class="m-form-label">Телефон пациента <span class="m-form-required">*</span></label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        class="m-input is-focusable" 
+                        required
+                        pattern="[\d\s\-\+\(\)]+"
+                        placeholder="+7 (999) 123-45-67">
+                    <span class="m-form-error" id="phone-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="email" class="m-form-label">Email пациента</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="m-input is-focusable" 
+                        placeholder="example@mail.ru">
+                    <span class="m-form-error" id="email-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="service" class="m-form-label">Услуга <span class="m-form-required">*</span></label>
+                    <select id="service" name="service" class="m-select is-focusable" required>
+                        <option value="">Выберите услугу</option>
+                        <option value="Консультация терапевта">Консультация терапевта - 2000 ₽ (30 мин)</option>
+                        <option value="Консультация кардиолога">Консультация кардиолога - 3500 ₽ (45 мин)</option>
+                        <option value="Консультация невролога">Консультация невролога - 3200 ₽ (40 мин)</option>
+                        <option value="Консультация педиатра">Консультация педиатра - 2500 ₽ (35 мин)</option>
+                        <option value="ЭКГ (электрокардиограмма)">ЭКГ (электрокардиограмма) - 1500 ₽ (20 мин)</option>
+                        <option value="УЗИ брюшной полости">УЗИ брюшной полости - 2800 ₽ (30 мин)</option>
+                        <option value="Анализ крови общий">Анализ крови общий - 800 ₽ (10 мин)</option>
+                        <option value="Хирургическая консультация">Хирургическая консультация - 4000 ₽ (50 мин)</option>
+                    </select>
+                    <span class="m-form-error" id="service-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="doctor" class="m-form-label">Врач <span class="m-form-required">*</span></label>
+                    <select id="doctor" name="doctor" class="m-select is-focusable" required>
+                        <option value="">Выберите врача</option>
+                        <option value="Иванов Иван Иванович">Иванов Иван Иванович - Терапевт</option>
+                        <option value="Петрова Мария Сергеевна">Петрова Мария Сергеевна - Кардиолог</option>
+                        <option value="Сидоров Петр Александрович">Сидоров Петр Александрович - Невролог</option>
+                        <option value="Козлова Анна Викторовна">Козлова Анна Викторовна - Педиатр</option>
+                        <option value="Смирнов Дмитрий Олегович">Смирнов Дмитрий Олегович - Хирург</option>
+                    </select>
+                    <span class="m-form-error" id="doctor-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="date" class="m-form-label">Дата приема <span class="m-form-required">*</span></label>
+                    <input 
+                        type="date" 
+                        id="date" 
+                        name="date" 
+                        class="m-input is-focusable" 
+                        required>
+                    <span class="m-form-error" id="date-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="time" class="m-form-label">Время приема <span class="m-form-required">*</span></label>
+                    <input 
+                        type="time" 
+                        id="time" 
+                        name="time" 
+                        class="m-input is-focusable" 
+                        required>
+                    <span class="m-form-error" id="time-error"></span>
+                </div>
+
+                <div class="m-form-group">
+                    <label for="message" class="m-form-label">Комментарий</label>
+                    <textarea 
+                        id="message" 
+                        name="message" 
+                        class="m-textarea is-focusable" 
+                        maxlength="500"
+                        rows="4"
+                        placeholder="Дополнительная информация о записи..."></textarea>
+                    <span class="m-form-error" id="message-error"></span>
+                </div>
+
+                <button type="submit" class="m-button is-hoverable-button is-active-button">Создать запись</button>
+            </form>
+        </section>
+
+        <section class="m-section">
+            <h2>Записи на услуги</h2>
+            <div id="appointment-list" class="m-appointment-list">
+                <!-- Элементы записей будут добавлены динамически -->
+            </div>
+        </section>
+
+        <!-- Шаблон для элемента записи (скрыт) -->
+        <template id="appointment-item-template">
+            <article class="m-appointment-item is-hoverable" data-id="">
+                <div class="m-appointment-header">
+                    <div class="m-appointment-author">
+                        <h3 class="m-appointment-name"></h3>
+                        <span class="m-appointment-email"></span>
+                    </div>
+                    <div class="m-appointment-meta">
+                        <span class="m-appointment-date"></span>
+                        <span class="m-appointment-status"></span>
+                    </div>
+                </div>
+                <div class="m-appointment-content">
+                    <p class="m-appointment-service"><strong>Услуга:</strong> <span class="m-appointment-service-name"></span></p>
+                    <p class="m-appointment-doctor"><strong>Врач:</strong> <span class="m-appointment-doctor-name"></span></p>
+                    <p class="m-appointment-datetime"><strong>Дата и время:</strong> <span class="m-appointment-datetime-value"></span></p>
+                    <p class="m-appointment-phone"><strong>Телефон:</strong> <span class="m-appointment-phone-value"></span></p>
+                    <p class="m-appointment-message"></p>
+                </div>
+                <div class="m-appointment-actions">
+                    <button type="button" class="m-button m-button--edit is-hoverable-button">Редактировать</button>
+                    <button type="button" class="m-button m-button--delete is-hoverable-button">Удалить</button>
+                </div>
+            </article>
+        </template>
+    </main>
+
+    <footer class="l-footer">
+        <div class="l-footer-container">
+            <div class="l-footer-info">
+                <h3>Системная информация</h3>
+                <address>
+                    <p>Версия системы: <strong>1.0.0</strong></p>
+                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
+                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
+                    <p>Статус системы: <strong>Активна</strong></p>
+                </address>
+            </div>
+            <div class="l-footer-copyright">
+                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
+            </div>
+        </div>
+        <div class="l-footer-banner is-hidden-mobile">
+            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
+            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
+        </div>
+    </footer>
+</body>
+
+</html>
+

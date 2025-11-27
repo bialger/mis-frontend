@@ -440,3 +440,244 @@
     text-decoration: none;
 }
 
+/* Module: Appointment Form */
+.m-appointment-form {
+    max-width: 800px;
+    margin: 2rem 0;
+}
+
+.m-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.m-form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.m-form-required {
+    color: var(--danger-color);
+}
+
+.m-input,
+.m-textarea,
+.m-select {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--white);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.m-input:focus,
+.m-textarea:focus,
+.m-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.m-input.is-invalid,
+.m-textarea.is-invalid,
+.m-select.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.m-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.m-form-error {
+    display: none;
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.m-button {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 500;
+}
+
+.m-button:hover {
+    background-color: rgb(41, 128, 185);
+    transform: translateY(-1px);
+}
+
+.m-button:active {
+    transform: translateY(0);
+}
+
+.m-button--edit {
+    background-color: var(--warning-color);
+}
+
+.m-button--edit:hover {
+    background-color: rgb(230, 126, 34);
+}
+
+.m-button--delete {
+    background-color: var(--danger-color);
+}
+
+.m-button--delete:hover {
+    background-color: rgb(192, 57, 43);
+}
+
+/* Module: Appointment List */
+.m-appointment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.m-appointment-empty {
+    text-align: center;
+    color: var(--muted-color);
+    font-style: italic;
+    padding: 2rem;
+    background-color: var(--light-color);
+    border-radius: 8px;
+}
+
+.m-appointment-item {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.m-appointment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.m-appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.m-appointment-author {
+    flex: 1;
+    min-width: 200px;
+}
+
+.m-appointment-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0 0 0.25rem 0;
+}
+
+.m-appointment-email {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
+.m-appointment-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.m-appointment-date {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.m-appointment-content {
+    margin-bottom: 1rem;
+}
+
+.m-appointment-message {
+    color: var(--primary-color);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+
+.m-appointment-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.m-appointment-actions .m-button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.m-appointment-service,
+.m-appointment-doctor,
+.m-appointment-datetime,
+.m-appointment-phone {
+    color: var(--primary-color);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.m-appointment-service strong,
+.m-appointment-doctor strong,
+.m-appointment-datetime strong,
+.m-appointment-phone strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.m-status-new {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.m-status-confirmed {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--success-color);
+    color: var(--white);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.m-status-cancelled {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--danger-color);
+    color: var(--white);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
