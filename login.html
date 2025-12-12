@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Вход в медицинскую CRM систему">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Вход в систему - Медицинская CRM</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .l-login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .m-login-card {
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .m-login-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+        .m-login-error {
+            background: #fee;
+            color: var(--danger-color);
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .m-login-error.is-visible {
+            display: block;
+        }
+    </style>
+    <script src="js/api.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/login-app.js"></script>
+</head>
+
+<body>
+    <div class="l-login-container">
+        <div class="m-login-card">
+            <h1 class="m-login-title">Вход в систему</h1>
+            <div id="login-app">
+                <div v-if="error" class="m-login-error is-visible">{{ error }}</div>
+                <form @submit.prevent="handleSubmit" class="m-appointment-form">
+                    <div class="m-form-group">
+                        <label for="login" class="m-form-label">Логин <span class="m-form-required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="login" 
+                            v-model="formData.login"
+                            class="m-input is-focusable" 
+                            required 
+                            autocomplete="username"
+                            placeholder="Введите логин или имя пользователя">
+                    </div>
+                    <div class="m-form-group">
+                        <label for="password" class="m-form-label">Пароль <span class="m-form-required">*</span></label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            v-model="formData.password"
+                            class="m-input is-focusable" 
+                            required
+                            autocomplete="current-password"
+                            placeholder="Введите пароль">
+                    </div>
+                    <button type="submit" class="m-button is-hoverable-button is-active-button" :disabled="loading">
+                        {{ loading ? 'Вход...' : 'Войти' }}
+                    </button>
+                </form>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--muted-color); text-align: center;">
+                <p>Для тестирования используйте:</p>
+                <p><strong>Логин:</strong> Главный врач Сидоров (или 3) - Глава клиник</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

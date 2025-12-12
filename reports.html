@@ -8,108 +8,95 @@
         content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
     <meta name="keywords"
         content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Медицинская CRM - Отчеты</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/module.css">
     <link rel="stylesheet" href="css/state.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/reports-app.js"></script>
 </head>
 
 <body>
-    <header class="l-header">
-        <div class="l-header-container">
-            <h1>Медицинская CRM система</h1>
-            <nav>
-                <ul class="m-nav-menu">
-                    <li><a href="index.html" class="is-hoverable-link">Панель управления</a></li>
-                    <li><a href="patients.html" class="is-hoverable-link">Пациенты</a></li>
-                    <li><a href="doctors.html" class="is-hoverable-link">Врачи</a></li>
-                    <li><a href="schedule.html" class="is-hoverable-link">Расписание</a></li>
-                    <li><a href="reports.html" class="is-hoverable-link">Отчеты</a></li>
-                    <li><a href="settings.html" class="is-hoverable-link">Настройки</a></li>
-                    <li><a href="appointment.html" class="is-hoverable-link">Записи на услуги</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="l-main">
         <div class="l-content-wrapper">
             <div class="l-main-content">
                 <section class="m-section">
                     <h2>Отчеты и аналитика</h2>
-                    <div class="m-grid m-grid--reports">
-                        <article class="m-card is-hoverable">
-                            <h3>Статистика работы</h3>
-                            <ul>
-                                <li>Количество пациентов за период</li>
-                                <li>Загруженность врачей</li>
-                                <li>Финансовые отчеты</li>
-                                <li>Анализ эффективности</li>
-                            </ul>
-                        </article>
-                        <article class="m-card is-hoverable">
-                            <h3>Ключевые показатели</h3>
-                            <ul>
-                                <li>Среднее время приема: <strong>30 мин</strong></li>
-                                <li>Процент отмен записей: <strong>5%</strong></li>
-                                <li>Удовлетворенность пациентов: <strong>95%</strong></li>
-                                <li>Заполненность расписания: <strong>90%</strong></li>
-                            </ul>
-                        </article>
+                    <div id="reports-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else>
+                            <div class="m-grid m-grid--reports" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                <article class="m-card is-hoverable">
+                                    <h3>Статистика работы</h3>
+                                    <ul>
+                                        <li>Пациентов за период: <strong>{{ stats.totalPatients }}</strong></li>
+                                        <li>Записей за период: <strong>{{ stats.totalAppointments }}</strong></li>
+                                        <li>Врачей в системе: <strong>{{ stats.totalDoctors }}</strong></li>
+                                        <li>Онлайн-записей: <strong>{{ stats.onlineAppointments }}</strong></li>
+                                        <li>Записей через регистратуру: <strong>{{ stats.frontDeskAppointments }}</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Ключевые показатели</h3>
+                                    <ul>
+                                        <li>Среднее время приема: <strong>{{ stats.avgAppointmentTime }} мин</strong></li>
+                                        <li>Процент отмен записей: <strong>{{ stats.cancelRate }}%</strong></li>
+                                        <li>Процент неявок: <strong>{{ stats.noShowRate }}%</strong></li>
+                                        <li>Удовлетворенность пациентов: <strong>{{ stats.satisfactionRate }}%</strong></li>
+                                        <li>Заполненность расписания: <strong>{{ stats.scheduleLoad }}%</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Статусы записей</h3>
+                                    <ul>
+                                        <li>Записан: <strong>{{ stats.bookedCount }}</strong></li>
+                                        <li>Подтвержден: <strong>{{ stats.confirmedCount }}</strong></li>
+                                        <li>Отменен: <strong>{{ stats.canceledCount }}</strong></li>
+                                        <li>Не пришел: <strong>{{ stats.noShowCount }}</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Финансовые отчеты</h3>
+                                    <ul>
+                                        <li>Общая сумма: <strong>{{ formatCurrency(stats.totalRevenue) }} ₽</strong></li>
+                                        <li>Оплачено: <strong>{{ formatCurrency(stats.paidRevenue) }} ₽</strong></li>
+                                        <li>К оплате: <strong>{{ formatCurrency(stats.totalRevenue - stats.paidRevenue) }} ₽</strong></li>
+                                        <li>Средний чек: <strong>{{ stats.totalAppointments > 0 ? formatCurrency(Math.round(stats.totalRevenue / stats.totalAppointments)) : 0 }} ₽</strong></li>
+                                    </ul>
+                                </article>
+                            </div>
+                            
+                            <article class="m-card is-hoverable">
+                                <h3>Анализ эффективности</h3>
+                                <ul>
+                                    <li>Конверсия онлайн-записей: <strong>{{ stats.totalAppointments > 0 ? Math.round((stats.onlineAppointments / stats.totalAppointments) * 100) : 0 }}%</strong></li>
+                                    <li>Записей на врача: <strong>{{ stats.totalDoctors > 0 ? Math.round(stats.totalAppointments / stats.totalDoctors) : 0 }}</strong></li>
+                                    <li>Записей на пациента: <strong>{{ stats.totalPatients > 0 ? Math.round(stats.totalAppointments / stats.totalPatients * 10) / 10 : 0 }}</strong></li>
+                                </ul>
+                            </article>
+                        </div>
                     </div>
                 </section>
             </div>
 
-            <aside class="m-aside">
-                <h3>Уведомления системы</h3>
-                <ul>
-                    <li>Новые записи на прием</li>
-                    <li>Отмена записей</li>
-                    <li>Системные обновления</li>
-                    <li>Резервное копирование данных</li>
-                </ul>
-
-                <h3>Быстрые действия</h3>
-                <ul>
-                    <li>Добавить пациента</li>
-                    <li>Создать запись</li>
-                    <li>Просмотреть расписание</li>
-                    <li>Сформировать отчет</li>
-                </ul>
-
-                <h3>Статус системы</h3>
-                <ul>
-                    <li>База данных: <strong>Активна</strong></li>
-                    <li>Резервное копирование: <strong>Выполнено</strong></li>
-                    <li>Последняя синхронизация: <em>2 мин назад</em></li>
-                </ul>
-            </aside>
+            <div id="sidebar-placeholder"></div>
         </div>
     </main>
 
-    <footer class="l-footer">
-        <div class="l-footer-container">
-            <div class="l-footer-info">
-                <h3>Системная информация</h3>
-                <address>
-                    <p>Версия системы: <strong>1.0.0</strong></p>
-                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
-                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
-                    <p>Статус системы: <strong>Активна</strong></p>
-                </address>
-            </div>
-            <div class="l-footer-copyright">
-                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
-            </div>
-        </div>
-        <div class="l-footer-banner is-hidden-mobile">
-            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
-            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 </body>
 
 </html>

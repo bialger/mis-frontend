@@ -8,115 +8,76 @@
         content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
     <meta name="keywords"
         content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Медицинская CRM - Расписание</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/module.css">
     <link rel="stylesheet" href="css/state.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/schedule-app.js"></script>
 </head>
 
 <body>
-    <header class="l-header">
-        <div class="l-header-container">
-            <h1>Медицинская CRM система</h1>
-            <nav>
-                <ul class="m-nav-menu">
-                    <li><a href="index.html" class="is-hoverable-link">Панель управления</a></li>
-                    <li><a href="patients.html" class="is-hoverable-link">Пациенты</a></li>
-                    <li><a href="doctors.html" class="is-hoverable-link">Врачи</a></li>
-                    <li><a href="schedule.html" class="is-hoverable-link">Расписание</a></li>
-                    <li><a href="reports.html" class="is-hoverable-link">Отчеты</a></li>
-                    <li><a href="settings.html" class="is-hoverable-link">Настройки</a></li>
-                    <li><a href="appointment.html" class="is-hoverable-link">Записи на услуги</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="l-main">
         <div class="l-content-wrapper">
             <div class="l-main-content">
                 <section class="m-section">
                     <h2>Расписание и календарь</h2>
-                    <div class="m-grid m-grid--schedule">
-                        <article class="m-card is-hoverable">
-                            <h3>Планирование работы</h3>
-                            <p>Управление расписанием врачей, кабинетами и медицинским оборудованием.</p>
 
-                            <h3>Принципы планирования</h3>
-                            <blockquote class="m-blockquote" cite="https://www.who.int/">
-                                <p><i>"Эффективное планирование медицинских ресурсов - основа качественного оказания
-                                        медицинской помощи."</i></p>
-                                <cite>Руководство по управлению медицинскими учреждениями</cite>
-                            </blockquote>
-                        </article>
-                        <article class="m-card is-hoverable">
-                            <h3>Техническая реализация</h3>
-                            <p>Система использует современные технологии для управления расписанием:</p>
-                            <pre class="m-code"><code>// Структура записи на прием
-struct Appointment {
-    string patientId;
-    string doctorId;
-    DateTime appointmentTime;
-    string room;
-    string status;
-    string notes;
-};</code></pre>
-                        </article>
+                    <div id="schedule-app">
+                        <div class="m-schedule-controls" style="margin-bottom: 1.5rem;">
+                            <label>
+                                Филиал:
+                                <select v-model="currentBranchId" class="m-select is-focusable">
+                                    <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+                                        {{ branch.name }}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Дата:
+                                <input type="date" v-model="currentDate" class="m-input is-focusable">
+                            </label>
+                        </div>
+
+                        <div id="schedule-content">
+                            <div v-if="loading" class="m-preloader">Загрузка...</div>
+                            <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                            <div v-else-if="appointments.length === 0">
+                                <p>На выбранную дату нет записей</p>
+                            </div>
+                            <div v-else>
+                                <h3>Записи на {{ formatDateFull(currentDate) }}</h3>
+                                <div v-for="apt in appointments" :key="apt.id" class="m-schedule-slot" :data-appointment-id="apt.id">
+                                    <div class="m-schedule-slot-time">{{ formatTime(apt.start) }}</div>
+                                    <div class="m-schedule-slot-content">
+                                        <div class="m-schedule-slot-patient">{{ apt.patient?.fullName || 'Пациент не указан' }}</div>
+                                        <div class="m-schedule-slot-status" :class="'m-status-' + apt.status.toLowerCase()">
+                                            {{ getStatusText(apt.status) }}
+                                        </div>
+                                        <div class="m-schedule-slot-icons" v-html="apt.patient?.iconsEmoji || ''"></div>
+                                    </div>
+                                    <a :href="'appointment-detail.html?id=' + apt.id" class="m-schedule-slot-link">Открыть</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
 
-            <aside class="m-aside">
-                <h3>Уведомления системы</h3>
-                <ul>
-                    <li>Новые записи на прием</li>
-                    <li>Отмена записей</li>
-                    <li>Системные обновления</li>
-                    <li>Резервное копирование данных</li>
-                </ul>
-
-                <h3>Быстрые действия</h3>
-                <ul>
-                    <li>Добавить пациента</li>
-                    <li>Создать запись</li>
-                    <li>Просмотреть расписание</li>
-                    <li>Сформировать отчет</li>
-                </ul>
-
-                <h3>Статус системы</h3>
-                <ul>
-                    <li>База данных: <strong>Активна</strong></li>
-                    <li>Резервное копирование: <strong>Выполнено</strong></li>
-                    <li>Последняя синхронизация: <em>2 мин назад</em></li>
-                </ul>
-            </aside>
+            <div id="sidebar-placeholder"></div>
         </div>
     </main>
 
-    <footer class="l-footer">
-        <div class="l-footer-container">
-            <div class="l-footer-info">
-                <h3>Системная информация</h3>
-                <address>
-                    <p>Версия системы: <strong>1.0.0</strong></p>
-                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
-                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
-                    <p>Статус системы: <strong>Активна</strong></p>
-                </address>
-            </div>
-            <div class="l-footer-copyright">
-                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
-            </div>
-        </div>
-        <div class="l-footer-banner is-hidden-mobile">
-            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
-            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 </body>
 
 </html>
-

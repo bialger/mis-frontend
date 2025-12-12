@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Карточка пациента (форма 025-У)">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Карточка пациента - Медицинская CRM</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/patient-detail-app.js"></script>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="l-main">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-section">
+                    <h2>Карточка пациента (форма 025-У)</h2>
+                    <div id="patient-detail-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else-if="patient" class="m-patient-detail">
+                            <!-- Титульный блок -->
+                            <div class="m-patient-title-block">
+                                <h3>Форма 025-У</h3>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Номер карты</label>
+                                        <p class="m-form-value">{{ patient.cardNumber || 'Не присвоен' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Дата создания</label>
+                                        <p class="m-form-value">{{ formatDate(patient.cardCreatedAt) || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Наименование организации</label>
+                                        <p class="m-form-value">{{ patient.organizationName || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Код организации (ОКПО/ОКУД)</label>
+                                        <p class="m-form-value">{{ patient.organizationCode || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group m-form-group--full">
+                                        <label class="m-form-label">Адрес организации</label>
+                                        <p class="m-form-value">{{ patient.organizationAddress || 'Не указан' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Вкладки -->
+                            <div class="m-tabs">
+                                <button v-for="tab in tabs" :key="tab.id" 
+                                    @click="activeTab = tab.id"
+                                    :class="['m-tab-button', { 'is-active': activeTab === tab.id }]">
+                                    {{ tab.label }}
+                                </button>
+                            </div>
+
+                            <!-- Основная информация -->
+                            <div v-show="activeTab === 'main'" class="m-tab-content">
+                                <div class="m-patient-header">
+                                    <h3>{{ patient.fullName || 'Без имени' }}</h3>
+                                    <div v-if="patient.icons && patient.icons.length > 0" class="m-patient-icons">
+                                        {{ patientIcons }}
+                                    </div>
+                                </div>
+
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">ФИО</label>
+                                        <input v-if="editing" type="text" v-model="editData.fullName" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.fullName || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Телефон</label>
+                                        <input v-if="editing" type="tel" v-model="editData.phone" class="m-input" 
+                                            pattern="[\d\s\-\+\(\)]+" placeholder="+7 (999) 123-45-67">
+                                        <p v-else class="m-form-value">{{ patient.phone || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Email</label>
+                                        <input v-if="editing" type="email" v-model="editData.email" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.email || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Дата рождения</label>
+                                        <input v-if="editing" type="date" v-model="editData.dob" class="m-input">
+                                        <p v-else class="m-form-value">{{ formatDate(patient.dob) || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Пол</label>
+                                        <select v-if="editing" v-model="editData.gender" class="m-select">
+                                            <option value="">Не указан</option>
+                                            <option value="MALE">Мужской</option>
+                                            <option value="FEMALE">Женский</option>
+                                        </select>
+                                        <p v-else class="m-form-value">{{ getGenderText(patient.gender) || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Местность</label>
+                                        <select v-if="editing" v-model="editData.localityType" class="m-select">
+                                            <option value="">Не указана</option>
+                                            <option value="URBAN">Городская</option>
+                                            <option value="RURAL">Сельская</option>
+                                        </select>
+                                        <p v-else class="m-form-value">{{ getLocalityText(patient.localityType) || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Гражданство</label>
+                                        <input v-if="editing" type="text" v-model="editData.citizenship" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.citizenship || 'Не указано' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Место регистрации</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Регион</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.region" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.region || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Район</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.district" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.district || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Город/Населенный пункт</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.city" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.city || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Улица</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.street" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.street || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Дом</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.house" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.house || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Квартира</label>
+                                        <input v-if="editing" type="text" v-model="editData.registrationAddress.apartment" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.registrationAddress?.apartment || 'Не указана' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Адрес проживания</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Регион</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.region" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.region || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Район</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.district" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.district || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Город/Населенный пункт</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.city" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.city || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Улица</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.street" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.street || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Дом</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.house" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.house || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Квартира</label>
+                                        <input v-if="editing" type="text" v-model="editData.residenceAddress.apartment" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.residenceAddress?.apartment || 'Не указана' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Документ, удостоверяющий личность</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Тип документа</label>
+                                        <input v-if="editing" type="text" v-model="editData.identityDocument.type" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.identityDocument?.type || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Серия</label>
+                                        <input v-if="editing" type="text" v-model="editData.identityDocument.series" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.identityDocument?.series || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Номер</label>
+                                        <input v-if="editing" type="text" v-model="editData.identityDocument.number" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.identityDocument?.number || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Кем выдан</label>
+                                        <input v-if="editing" type="text" v-model="editData.identityDocument.issuedBy" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.identityDocument?.issuedBy || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Дата выдачи</label>
+                                        <input v-if="editing" type="date" v-model="editData.identityDocument.issuedAt" class="m-input">
+                                        <p v-else class="m-form-value">{{ formatDate(patient.identityDocument?.issuedAt) || 'Не указана' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Полис ОМС</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Серия</label>
+                                        <input v-if="editing" type="text" v-model="editData.omsSeries" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.omsSeries || 'Не указана' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Номер</label>
+                                        <input v-if="editing" type="text" v-model="editData.omsPolicy" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.omsPolicy || 'Не указан' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Страховая организация</label>
+                                        <input v-if="editing" type="text" v-model="editData.insuranceCompany" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.insuranceCompany || 'Не указана' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>СНИЛС</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Номер СНИЛС</label>
+                                        <input v-if="editing" type="text" v-model="editData.snils" class="m-input" 
+                                            placeholder="123-456-789-01">
+                                        <p v-else class="m-form-value">{{ patient.snils || 'Не указан' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Контактное лицо/Опекун</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">ФИО</label>
+                                        <input v-if="editing" type="text" v-model="editData.guardian.fullName" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.guardian?.fullName || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Телефон</label>
+                                        <input v-if="editing" type="tel" v-model="editData.guardian.phone" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.guardian?.phone || 'Не указан' }}</p>
+                                    </div>
+                                </div>
+
+                                <h4>Социально-медицинские сведения</h4>
+                                <div class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Профессия/род деятельности</label>
+                                        <input v-if="editing" type="text" v-model="editData.profession" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.profession || 'Не указано' }}</p>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Место работы/учёбы</label>
+                                        <input v-if="editing" type="text" v-model="editData.workplace" class="m-input">
+                                        <p v-else class="m-form-value">{{ patient.workplace || 'Не указано' }}</p>
+                                    </div>
+                                </div>
+
+                                <div v-if="editing" class="m-form-actions">
+                                    <button @click="savePatient" class="m-button is-hoverable-button">Сохранить</button>
+                                    <button @click="cancelEdit" class="m-button is-hoverable-button">Отмена</button>
+                                </div>
+                                <div v-else class="m-form-actions">
+                                    <button @click="startEdit" class="m-button is-hoverable-button">Редактировать</button>
+                                </div>
+                            </div>
+
+                            <!-- Вкладка: Пометки -->
+                            <div v-show="activeTab === 'icons'" class="m-tab-content">
+                                <h4>Пометки пациента</h4>
+                                <div v-if="availableIcons.length === 0" class="m-preloader">Загрузка...</div>
+                                <div v-else>
+                                    <div class="m-icons-list">
+                                        <label v-for="icon in availableIcons" :key="icon.id" class="m-icon-checkbox">
+                                            <input type="checkbox" 
+                                                :checked="patient.icons && patient.icons.includes(icon.id)"
+                                                @change="toggleIcon(icon.id)">
+                                            <span class="m-icon-emoji">{{ icon.emoji }}</span>
+                                            <span class="m-icon-label">{{ icon.label }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Вкладка: Согласия -->
+                            <div v-show="activeTab === 'consents'" class="m-tab-content">
+                                <h4>Согласия пациента</h4>
+                                <div v-if="patient.consents && patient.consents.length > 0">
+                                    <div v-for="(consent, idx) in patient.consents" :key="idx" class="m-consent-item">
+                                        <p><strong>Тип:</strong> {{ consent.type }}</p>
+                                        <p><strong>Подписано:</strong> {{ formatDateTime(consent.signedAt) }}</p>
+                                        <p v-if="consent.signedBy"><strong>Подписал:</strong> Пользователь #{{ consent.signedBy }}</p>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p>Согласия отсутствуют</p>
+                                </div>
+                            </div>
+
+                            <!-- Вкладка: История -->
+                            <div v-show="activeTab === 'history'" class="m-tab-content">
+                                <h4>История визитов</h4>
+                                <div class="m-history-stats">
+                                    <p><strong>Всего визитов:</strong> {{ patient.visitCount || appointments.length }}</p>
+                                    <p v-if="patient.lastVisitAt"><strong>Последний визит:</strong> {{ formatDateTime(patient.lastVisitAt) }}</p>
+                                </div>
+                                <div v-if="appointments.length === 0">
+                                    <p>История визитов отсутствует</p>
+                                </div>
+                                <div v-else>
+                                    <div class="m-appointments-list">
+                                        <div v-for="apt in appointments" :key="apt.id" class="m-appointment-item">
+                                            <p><strong>{{ formatDateTime(apt.start) }}</strong> - {{ getStatusText(apt.status) }}</p>
+                                            <a :href="'appointment-detail.html?id=' + apt.id" class="m-link">Открыть запись</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Вкладка: Файлы -->
+                            <div v-show="activeTab === 'files'" class="m-tab-content">
+                                <h4>Файлы пациента</h4>
+                                <div v-if="filesLoading" class="m-preloader">Загрузка...</div>
+                                <div v-else>
+                                    <div v-if="files.length === 0">
+                                        <p>Файлы отсутствуют</p>
+                                    </div>
+                                    <div v-else>
+                                        <div v-for="file in files" :key="file.id" class="m-file-item">
+                                            <p><strong>{{ file.title }}</strong> ({{ formatFileSize(file.size) }})</p>
+                                            <p>{{ formatDateTime(file.createdAt) }}</p>
+                                            <a :href="file.downloadUrl" class="m-link">Скачать</a>
+                                        </div>
+                                    </div>
+                                    <div class="m-file-upload">
+                                        <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;">
+                                        <button @click="$refs.fileInput.click()" class="m-button is-hoverable-button">Загрузить файл</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Вкладка: Лог изменений -->
+                            <div v-show="activeTab === 'audit'" class="m-tab-content">
+                                <h4>Лог изменений</h4>
+                                <div v-if="auditLoading" class="m-preloader">Загрузка...</div>
+                                <div v-else>
+                                    <div v-if="auditLog.length === 0">
+                                        <p>Записи отсутствуют</p>
+                                    </div>
+                                    <div v-else>
+                                        <div v-for="(log, idx) in auditLog" :key="idx" class="m-audit-item">
+                                            <p><strong>{{ formatDateTime(log.ts) }}</strong> - {{ log.action }}</p>
+                                            <p v-if="log.userId">Пользователь #{{ log.userId }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

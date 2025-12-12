@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
+    <meta name="keywords"
+        content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Медицинская CRM - Склад</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/inventory-app.js"></script>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="l-main">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-section">
+                    <h2>Склад</h2>
+                    
+                    <div id="inventory-app">
+                        <div class="m-inventory-controls" style="margin-bottom: 1.5rem;">
+                            <label>
+                                Филиал:
+                                <select v-model="currentBranchId" class="m-select is-focusable">
+                                    <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+                                        {{ branch.name }}
+                                    </option>
+                                </select>
+                            </label>
+                            <label v-if="currentTab === 'stock'">
+                                Категория:
+                                <select v-model="currentCategory" class="m-select is-focusable">
+                                    <option :value="null">Все категории</option>
+                                    <option value="DRUGS">Медикаменты</option>
+                                    <option value="MED_DEVICES">Медицинские изделия</option>
+                                    <option value="MED_CONSUMABLES">Медицинские расходники</option>
+                                    <option value="HOUSEHOLD_CONSUMABLES">Хозяйственные расходники</option>
+                                </select>
+                            </label>
+                        </div>
+                        
+                        <div class="m-inventory-tabs" style="margin-bottom: 1.5rem;">
+                            <button :class="['m-tab-button', { 'is-active': currentTab === 'stock' }]" 
+                                @click="setTab('stock')">Остатки</button>
+                            <button :class="['m-tab-button', { 'is-active': currentTab === 'movement' }]" 
+                                @click="setTab('movement')">Движение</button>
+                            <button :class="['m-tab-button', { 'is-active': currentTab === 'operations' }]" 
+                                @click="setTab('operations')">Операции</button>
+                        </div>
+                        
+                        <div id="inventory-content">
+                            <div v-if="!canViewInventory" class="m-error-message">
+                                У вас нет прав для просмотра склада
+                            </div>
+                            <div v-else-if="loading" class="m-preloader">Загрузка...</div>
+                            <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                            
+                            <!-- Stock Tab -->
+                            <div v-else-if="currentTab === 'stock'">
+                                <div v-if="stockItems.length === 0">
+                                    <p>На складе нет позиций</p>
+                                </div>
+                                <div v-else>
+                                    <div class="m-inventory-stock-wrapper">
+                                        <table class="m-table" :style="'grid-template-columns: repeat(' + (canWriteInventory ? 7 : 6) + ', minmax(120px, 1fr));'">
+                                            <thead>
+                                                <tr :style="'grid-template-columns: repeat(' + (canWriteInventory ? 7 : 6) + ', minmax(120px, 1fr));'">
+                                                    <th>Наименование</th>
+                                                    <th>Категория</th>
+                                                    <th>Остаток</th>
+                                                    <th>Единица</th>
+                                                    <th>Порог "мало"</th>
+                                                    <th>Статус</th>
+                                                    <th v-if="canWriteInventory">Действия</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="item in stockItems" :key="item.id" 
+                                                    :class="{ 'm-row-warning': item.stock <= item.minStock }"
+                                                    :style="'grid-template-columns: repeat(' + (canWriteInventory ? 7 : 6) + ', minmax(120px, 1fr));'">
+                                                    <td><strong>{{ item.name }}</strong></td>
+                                                    <td>{{ getCategoryText(item.category) }}</td>
+                                                    <td>{{ item.stock }}</td>
+                                                    <td>{{ getUnitText(item.unit) }}</td>
+                                                    <td>{{ item.minStock }}</td>
+                                                    <td>
+                                                        <span :class="['m-badge', item.stock <= item.minStock ? 'm-status-warning' : 'm-status-ok']">
+                                                            {{ item.stock <= item.minStock ? 'Мало' : 'Норма' }}
+                                                        </span>
+                                                    </td>
+                                                    <td v-if="canWriteInventory">
+                                                        <button class="m-button m-button--small is-hoverable-button" 
+                                                            @click="openWriteOffModal(item.id, item.name)">
+                                                            Списать
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p style="margin-top: 1rem; color: #666;">Всего позиций: <strong>{{ stockItems.length }}</strong></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Movement Tab -->
+                            <div v-else-if="currentTab === 'movement'">
+                                <div v-if="movementLogs.length === 0">
+                                    <p>Движение по складу отсутствует</p>
+                                </div>
+                                <div v-else>
+                                    <div class="m-inventory-movement-wrapper">
+                                        <table class="m-table" style="grid-template-columns: repeat(4, minmax(150px, 1fr));">
+                                            <thead>
+                                                <tr style="grid-template-columns: repeat(4, minmax(150px, 1fr));">
+                                                    <th>Дата/Время</th>
+                                                    <th>Операция</th>
+                                                    <th>Пользователь</th>
+                                                    <th>Детали</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="log in movementLogs" :key="log.id" 
+                                                    style="grid-template-columns: repeat(4, minmax(150px, 1fr));">
+                                                    <td>{{ formatDateTime(log.ts) }}</td>
+                                                    <td>{{ getActionText(log.action) }}</td>
+                                                    <td>{{ getUserName(log.userId) }}</td>
+                                                    <td class="m-audit-diff">{{ log.diff ? JSON.stringify(log.diff) : '-' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p style="margin-top: 1rem; color: #666;">Всего записей: <strong>{{ movementLogs.length }}</strong></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Operations Tab -->
+                            <div v-else-if="currentTab === 'operations'">
+                                <div v-if="!canWriteInventory" class="m-error-message">
+                                    У вас нет прав для выполнения операций со складом
+                                </div>
+                                <div v-else class="m-inventory-operations">
+                                    <h3>Операции со складом</h3>
+                                    <div class="m-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+                                        <article class="m-card is-hoverable">
+                                            <h4>Списание</h4>
+                                            <p>Списать расходники со склада</p>
+                                            <button class="m-button is-hoverable-button" @click="openWriteOffModal()">Списать</button>
+                                        </article>
+                                        <article class="m-card is-hoverable">
+                                            <h4>Поступление</h4>
+                                            <p>Зафиксировать поступление товара</p>
+                                            <button class="m-button is-hoverable-button" @click="openReceiptModal()">Принять</button>
+                                        </article>
+                                        <article class="m-card is-hoverable">
+                                            <h4>Выдача</h4>
+                                            <p>Выдать товар сотруднику</p>
+                                            <button class="m-button is-hoverable-button" @click="openIssueModal()">Выдать</button>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Write Off Modal -->
+                        <div v-if="showWriteOffModal" class="m-modal" @click.self="showWriteOffModal = false">
+                            <div class="m-modal-content" @click.stop>
+                                <h3>Списание со склада</h3>
+                                <div v-if="writeOffData.itemName">
+                                    <p><strong>Позиция:</strong> {{ writeOffData.itemName }}</p>
+                                </div>
+                                <div v-else>
+                                    <label>
+                                        Позиция:
+                                        <select v-model="writeOffData.itemId" class="m-select is-focusable">
+                                            <option :value="null">Выберите позицию</option>
+                                            <option v-for="item in stockItems" :key="item.id" :value="item.id">
+                                                {{ item.name }} (остаток: {{ item.stock }})
+                                            </option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <label>
+                                    Количество:
+                                    <input type="number" v-model.number="writeOffData.quantity" 
+                                        class="m-input is-focusable" min="0.01" step="0.01" required>
+                                </label>
+                                <label>
+                                    Причина/Комментарий:
+                                    <textarea v-model="writeOffData.reason" 
+                                        class="m-textarea is-focusable" rows="3"></textarea>
+                                </label>
+                                <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                    <button class="m-button is-hoverable-button" @click="performWriteOff()">Списать</button>
+                                    <button class="m-button is-hoverable-button" @click="showWriteOffModal = false">Отмена</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Receipt Modal -->
+                        <div v-if="showReceiptModal" class="m-modal" @click.self="showReceiptModal = false">
+                            <div class="m-modal-content" @click.stop>
+                                <h3>Поступление на склад</h3>
+                                <label>
+                                    Позиция:
+                                    <select v-model="receiptData.itemId" class="m-select is-focusable">
+                                        <option :value="null">Выберите позицию</option>
+                                        <option v-for="item in stockItems" :key="item.id" :value="item.id">
+                                            {{ item.name }} (остаток: {{ item.stock }})
+                                        </option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Количество:
+                                    <input type="number" v-model.number="receiptData.quantity" 
+                                        class="m-input is-focusable" min="0.01" step="0.01" required>
+                                </label>
+                                <label>
+                                    Комментарий:
+                                    <textarea v-model="receiptData.comment" 
+                                        class="m-textarea is-focusable" rows="3"></textarea>
+                                </label>
+                                <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                    <button class="m-button is-hoverable-button" @click="performReceipt()">Принять</button>
+                                    <button class="m-button is-hoverable-button" @click="showReceiptModal = false">Отмена</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Issue Modal -->
+                        <div v-if="showIssueModal" class="m-modal" @click.self="showIssueModal = false">
+                            <div class="m-modal-content" @click.stop>
+                                <h3>Выдача со склада</h3>
+                                <label>
+                                    Позиция:
+                                    <select v-model="issueData.itemId" class="m-select is-focusable">
+                                        <option :value="null">Выберите позицию</option>
+                                        <option v-for="item in stockItems" :key="item.id" :value="item.id">
+                                            {{ item.name }} (остаток: {{ item.stock }})
+                                        </option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Количество:
+                                    <input type="number" v-model.number="issueData.quantity" 
+                                        class="m-input is-focusable" min="0.01" step="0.01" required>
+                                </label>
+                                <label>
+                                    Комментарий:
+                                    <textarea v-model="issueData.comment" 
+                                        class="m-textarea is-focusable" rows="3"></textarea>
+                                </label>
+                                <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                    <button class="m-button is-hoverable-button" @click="performIssue()">Выдать</button>
+                                    <button class="m-button is-hoverable-button" @click="showIssueModal = false">Отмена</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>
