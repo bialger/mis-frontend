@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
+    <meta name="keywords"
+        content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <title>Медицинская CRM - Склад</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/inventory.js"></script>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="l-main">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-section">
+                    <h2>Склад</h2>
+                    
+                    <div class="m-inventory-controls" style="margin-bottom: 1.5rem;">
+                        <label>
+                            Филиал:
+                            <select id="inventory-branch-select" class="m-select is-focusable"></select>
+                        </label>
+                        <label>
+                            Категория:
+                            <select id="inventory-category-filter" class="m-select is-focusable">
+                                <option value="">Все категории</option>
+                                <option value="DRUGS">Медикаменты</option>
+                                <option value="MED_DEVICES">Медицинские изделия</option>
+                                <option value="MED_CONSUMABLES">Медицинские расходники</option>
+                                <option value="HOUSEHOLD_CONSUMABLES">Хозяйственные расходники</option>
+                            </select>
+                        </label>
+                        <button id="load-inventory-btn" class="m-button is-hoverable-button">Загрузить</button>
+                    </div>
+                    
+                    <div class="m-inventory-tabs" style="margin-bottom: 1.5rem;">
+                        <button class="m-tab-button is-active" data-tab="stock">Остатки</button>
+                        <button class="m-tab-button" data-tab="movement">Движение</button>
+                        <button class="m-tab-button" data-tab="operations">Операции</button>
+                    </div>
+                    
+                    <div id="inventory-content">
+                        <p>Выберите филиал для просмотра склада</p>
+                    </div>
+                </section>
+            </div>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

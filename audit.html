@@ -8,7 +8,7 @@
         content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
     <meta name="keywords"
         content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
-    <title>Медицинская CRM - Расписание</title>
+    <title>Медицинская CRM - Логи действий</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/module.css">
@@ -18,7 +18,7 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/schedule.js"></script>
+    <script src="js/audit.js"></script>
 </head>
 
 <body>
@@ -28,36 +28,33 @@
         <div class="l-content-wrapper">
             <div class="l-main-content">
                 <section class="m-section">
-                    <h2>Расписание и календарь</h2>
-
-                    <div class="m-schedule-controls" style="margin-bottom: 1.5rem;">
+                    <h2>Логи действий (Аудит)</h2>
+                    
+                    <div class="m-audit-controls" style="margin-bottom: 1.5rem;">
                         <label>
-                            Филиал:
-                            <select id="branch-select" class="m-select is-focusable"></select>
+                            Фильтр по сущности:
+                            <select id="entity-type-filter" class="m-select is-focusable">
+                                <option value="">Все сущности</option>
+                                <option value="APPOINTMENT">Записи</option>
+                                <option value="PATIENT">Пациенты</option>
+                                <option value="INVENTORY">Склад</option>
+                                <option value="USER">Пользователи</option>
+                            </select>
                         </label>
                         <label>
-                            Дата:
-                            <input type="date" id="schedule-date" class="m-input is-focusable">
+                            Период с:
+                            <input type="date" id="audit-date-from" class="m-input is-focusable">
                         </label>
-                        <button id="load-schedule-btn" class="m-button is-hoverable-button">Загрузить</button>
+                        <label>
+                            Период по:
+                            <input type="date" id="audit-date-to" class="m-input is-focusable">
+                        </label>
+                        <button id="load-audit-btn" class="m-button is-hoverable-button">Загрузить</button>
                     </div>
-
-                    <div id="schedule-content">
-                        <p>Выберите филиал и дату для просмотра расписания</p>
+                    
+                    <div id="audit-content">
+                        <p>Загрузка логов...</p>
                     </div>
-
-
-                    <template id="schedule-slot-template">
-                        <div class="m-schedule-slot" data-appointment-id="">
-                            <div class="m-schedule-slot-time"></div>
-                            <div class="m-schedule-slot-content">
-                                <div class="m-schedule-slot-patient"></div>
-                                <div class="m-schedule-slot-status"></div>
-                                <div class="m-schedule-slot-icons"></div>
-                            </div>
-                            <a href="#" class="m-schedule-slot-link">Открыть</a>
-                        </div>
-                    </template>
                 </section>
             </div>
 
