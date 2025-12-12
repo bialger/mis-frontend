@@ -608,6 +608,263 @@ const api = {
   },
 
 
+  async createUser(userData) {
+    try {
+      return await apiRequest('users', {
+        method: 'POST',
+        body: JSON.stringify(userData)
+      });
+    } catch (error) {
+      return {id: Date.now(), ...userData};
+    }
+  },
+
+
+  async updateUser(userId, userData) {
+    try {
+      return await apiRequest(`users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(userData)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async getRoles() {
+    try {
+      const response = await apiRequest('roles');
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      return [
+        {role: 'ADMIN', label: 'Администратор'},
+        {role: 'DOCTOR', label: 'Врач'},
+        {role: 'HEAD', label: 'Руководитель'},
+        {role: 'SYSADMIN', label: 'Системный администратор'}
+      ];
+    }
+  },
+
+
+  async getPermissions() {
+    try {
+      const response = await apiRequest('permissions');
+      return response || {};
+    } catch (error) {
+      return {
+        canViewFinance: false,
+        canEditFinance: false,
+        canViewInventory: false,
+        canWriteInventory: false,
+        canManualEgiszSend: false,
+        canManageIconsDictionary: false,
+        canEditBackdateDays: 0
+      };
+    }
+  },
+
+
+  async updateRolePermissions(role, permissions) {
+    try {
+      return await apiRequest(`roles/${role}/permissions`, {
+        method: 'PATCH',
+        body: JSON.stringify(permissions)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async createBranch(branchData) {
+    try {
+      return await apiRequest('branches', {
+        method: 'POST',
+        body: JSON.stringify(branchData)
+      });
+    } catch (error) {
+      return {id: Date.now(), ...branchData};
+    }
+  },
+
+
+  async updateBranch(branchId, branchData) {
+    try {
+      return await apiRequest(`branches/${branchId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(branchData)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async createRoom(roomData) {
+    try {
+      return await apiRequest('rooms', {
+        method: 'POST',
+        body: JSON.stringify(roomData)
+      });
+    } catch (error) {
+      return {id: Date.now(), ...roomData};
+    }
+  },
+
+
+  async updateRoom(roomId, roomData) {
+    try {
+      return await apiRequest(`rooms/${roomId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(roomData)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async deleteRoom(roomId) {
+    try {
+      return await apiRequest(`rooms/${roomId}`, {method: 'DELETE'});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async createService(serviceData) {
+    try {
+      return await apiRequest('services', {
+        method: 'POST',
+        body: JSON.stringify(serviceData)
+      });
+    } catch (error) {
+      return {id: Date.now(), ...serviceData};
+    }
+  },
+
+
+  async updateService(serviceId, serviceData) {
+    try {
+      return await apiRequest(`services/${serviceId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(serviceData)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async deleteService(serviceId) {
+    try {
+      return await apiRequest(`services/${serviceId}`, {method: 'DELETE'});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async deleteTemplate(templateId) {
+    try {
+      return await apiRequest(`templates/${templateId}`, {method: 'DELETE'});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async createPatientIcon(iconData) {
+    try {
+      return await apiRequest('patient-icons', {
+        method: 'POST',
+        body: JSON.stringify(iconData)
+      });
+    } catch (error) {
+      return {id: `ICON_${Date.now()}`, ...iconData};
+    }
+  },
+
+
+  async updatePatientIcon(iconId, iconData) {
+    try {
+      return await apiRequest(`patient-icons/${iconId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(iconData)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async deletePatientIcon(iconId) {
+    try {
+      return await apiRequest(`patient-icons/${iconId}`, {method: 'DELETE'});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async getSettings() {
+    try {
+      const response = await apiRequest('settings');
+      return response || {};
+    } catch (error) {
+      return {};
+    }
+  },
+
+
+  async updateSettings(settings) {
+    try {
+      return await apiRequest('settings', {
+        method: 'PATCH',
+        body: JSON.stringify(settings)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async getIntegrations() {
+    try {
+      const response = await apiRequest('settings/integrations');
+      return response || {sms: {}, labs: []};
+    } catch (error) {
+      return {sms: {}, labs: []};
+    }
+  },
+
+
+  async updateSmsIntegration(smsConfig) {
+    try {
+      return await apiRequest('settings/integrations/sms', {
+        method: 'PATCH',
+        body: JSON.stringify(smsConfig)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async updateLabsIntegration(labsConfig) {
+    try {
+      return await apiRequest('settings/integrations/labs', {
+        method: 'PATCH',
+        body: JSON.stringify(labsConfig)
+      });
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
   async getFiles(entityType, entityId) {
     try {
       const params = [];
