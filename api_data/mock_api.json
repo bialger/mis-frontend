@@ -28,9 +28,9 @@
   "me": [
     {
       "user": {
-        "id": 1,
-        "name": "Ирина Петрова",
-        "role": "ADMIN"
+        "id": 3,
+        "name": "Главный врач Сидоров",
+        "role": "HEAD"
       },
       "branchScope": [1, 2],
       "permissions": {
@@ -38,8 +38,8 @@
         "canEditFinance": true,
         "canViewInventory": true,
         "canWriteInventory": true,
-        "canManualEgiszSend": false,
-        "canEditBackdateDays": 90
+        "canManualEgiszSend": true,
+        "canEditBackdateDays": 0
       }
     }
   ],
