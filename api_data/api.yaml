@@ -1,0 +1,432 @@
+openapi: 3.1.0
+
+info:
+  title: MIS API
+  version: 1.0.0
+  description: >
+    API медицинской информационной системы (self-hosted).
+    Контракт для фронтенда (RBAC, расписание, пациенты, визиты, склад).
+
+servers:
+  - url: /api/v1
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+  - name: Me
+  - name: Schedule
+  - name: Appointments
+  - name: Patients
+  - name: MedicalRecords
+  - name: Files
+  - name: Inventory
+  - name: Reports
+  - name: Settings
+  - name: Audit
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              examples: [FORBIDDEN, NOT_FOUND, VALIDATION_ERROR]
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+      required: [error]
+
+    CursorPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: {}
+        nextCursor:
+          type: string
+          nullable: true
+
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        role: { type: string, enum: [ADMIN, DOCTOR, HEAD, SYSADMIN] }
+
+    Permissions:
+      type: object
+      properties:
+        canViewFinance: { type: boolean }
+        canEditFinance: { type: boolean }
+        canViewInventory: { type: boolean }
+        canWriteInventory: { type: boolean }
+        canManualEgiszSend: { type: boolean }
+        canEditBackdateDays: { type: integer }
+
+    Me:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        branchScope:
+          type: array
+          items: { type: integer }
+        permissions:
+          $ref: "#/components/schemas/Permissions"
+
+    AppointmentStatus:
+      type: string
+      enum: [BOOKED, CONFIRMED, ARRIVED, NO_SHOW, CANCELED]
+
+    PaymentFlags:
+      type: object
+      properties:
+        noCashbox: { type: boolean }
+        payLater: { type: boolean }
+        partial: { type: boolean }
+
+    Appointment:
+      type: object
+      properties:
+        id: { type: integer }
+        branchId: { type: integer }
+        doctorId: { type: integer }
+        roomId: { type: integer }
+        start: { type: string, format: date-time }
+        end: { type: string, format: date-time }
+        status:
+          $ref: "#/components/schemas/AppointmentStatus"
+        source:
+          type: string
+          enum: [FRONT_DESK, ONLINE]
+        patient:
+          type: object
+          properties:
+            id: { type: integer }
+            fullName: { type: string }
+            phone: { type: string }
+            icons:
+              type: array
+              items: { type: string }
+        payment:
+          type: object
+          properties:
+            total: { type: number }
+            paid: { type: number }
+            method:
+              type: string
+              nullable: true
+            flags:
+              $ref: "#/components/schemas/PaymentFlags"
+
+    Patient:
+      type: object
+      properties:
+        id: { type: integer }
+        fullName: { type: string }
+        phone: { type: string }
+        icons:
+          type: array
+          items: { type: string }
+
+    MedicalRecord:
+      type: object
+      properties:
+        appointmentId: { type: integer }
+        locked: { type: boolean }
+        lockReason: { type: string, nullable: true }
+        sections:
+          type: object
+          properties:
+            complaints: { type: string }
+            anamnesis: { type: string }
+            examination: { type: string }
+            diagnoses:
+              type: array
+              items:
+                type: object
+                properties:
+                  text: { type: string }
+                  code: { type: string }
+            orders: { type: string }
+            procedures: { type: string }
+            epicrisis: { type: string }
+        signature:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [NOT_SIGNED, SIGNED]
+            signedAt:
+              type: string
+              format: date-time
+              nullable: true
+            signedBy:
+              type: integer
+              nullable: true
+
+    InventoryItem:
+      type: object
+      properties:
+        id: { type: integer }
+        branchId: { type: integer }
+        name: { type: string }
+        category:
+          type: string
+          enum: [DRUGS, MED_DEVICES, MED_CONSUMABLES, HOUSEHOLD_CONSUMABLES]
+        unit: { type: string }
+        stock: { type: number }
+        minStock: { type: number }
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login: { type: string }
+                password: { type: string }
+              required: [login, password]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken: { type: string }
+                  refreshToken: { type: string }
+                  user:
+                    $ref: "#/components/schemas/User"
+
+  /me:
+    get:
+      tags: [Me]
+      summary: Current user + permissions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+
+  /appointments:
+    get:
+      tags: [Appointments]
+      summary: Get appointments (schedule)
+      parameters:
+        - name: branchId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+
+    post:
+      tags: [Appointments]
+      summary: Create appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branchId: { type: integer }
+                doctorId: { type: integer }
+                roomId: { type: integer }
+                start: { type: string, format: date-time }
+                end: { type: string, format: date-time }
+                patientId: { type: integer }
+              required: [branchId, doctorId, start, end, patientId]
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+
+  /appointments/{id}:
+    get:
+      tags: [Appointments]
+      summary: Appointment details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+
+  /appointments/{id}/status:
+    post:
+      tags: [Appointments]
+      summary: Change appointment status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: "#/components/schemas/AppointmentStatus"
+              required: [status]
+      responses:
+        "200":
+          description: OK
+
+  /appointments/{id}/medical-record:
+    get:
+      tags: [MedicalRecords]
+      summary: Get medical record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalRecord"
+
+    put:
+      tags: [MedicalRecords]
+      summary: Save medical record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicalRecord"
+      responses:
+        "200":
+          description: OK
+
+  /patients:
+    get:
+      tags: [Patients]
+      summary: Search patients
+      parameters:
+        - name: query
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Patient"
+
+    post:
+      tags: [Patients]
+      summary: Create patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName: { type: string }
+                phone: { type: string }
+              required: [fullName, phone]
+      responses:
+        "201":
+          description: Created
+
+  /inventory/items:
+    get:
+      tags: [Inventory]
+      summary: Inventory list
+      parameters:
+        - name: branchId
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+
+  /audit:
+    get:
+      tags: [Audit]
+      summary: Audit log
+      parameters:
+        - name: entityId
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CursorPage"
