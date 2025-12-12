@@ -24,6 +24,7 @@ tags:
   - name: Inventory
   - name: Reports
   - name: Settings
+  - name: Branches
   - name: Audit
 
 components:
@@ -65,6 +66,7 @@ components:
       properties:
         id: { type: integer }
         name: { type: string }
+        login: { type: string, nullable: true, description: "Логин (username) для входа" }
         role: { type: string, enum: [ADMIN, DOCTOR, HEAD, SYSADMIN] }
 
     Permissions:
@@ -215,6 +217,62 @@ components:
         stock: { type: number }
         minStock: { type: number }
 
+    Branch:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        address: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        startTime: { type: string, format: time, nullable: true, description: "Время открытия филиала HH:mm" }
+        endTime: { type: string, format: time, nullable: true, description: "Время закрытия филиала HH:mm" }
+
+    WorkingHoursDay:
+      type: object
+      properties:
+        dayOfWeek: 
+          type: integer
+          description: "День недели: 0=Воскресенье, 1=Понедельник, 2=Вторник, 3=Среда, 4=Четверг, 5=Пятница, 6=Суббота"
+          minimum: 0
+          maximum: 6
+        startTime: 
+          type: string
+          format: time
+          description: "Время начала работы в формате HH:mm. Может быть null, если isWorking=false"
+          nullable: true
+        endTime: 
+          type: string
+          format: time
+          description: "Время окончания работы в формате HH:mm. Может быть null, если isWorking=false"
+          nullable: true
+        isWorking: 
+          type: boolean
+          description: "Работает ли врач в этот день недели. Если false, день отменен"
+
+    WorkingHours:
+      type: object
+      properties:
+        doctorId: { type: integer }
+        branchId: { type: integer }
+        schedule:
+          type: array
+          description: "Недельное расписание: для каждого дня недели устанавливаются часы работы. Некоторые дни могут быть отменены (isWorking=false)"
+          items:
+            $ref: "#/components/schemas/WorkingHoursDay"
+        slotDurationMin: 
+          type: integer
+          description: "Длительность слота в минутах"
+          default: 30
+        exceptions:
+          type: array
+          description: "Исключения - отмененные конкретные даты (опционально)"
+          nullable: true
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date, description: "Дата, когда врач не работает" }
+              reason: { type: string, nullable: true, description: "Причина отмены" }
+
 paths:
   /auth/login:
     post:
@@ -254,6 +312,113 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Me"
+
+  /doctors/{id}/working-hours:
+    get:
+      tags: [Schedule]
+      summary: Get doctor working hours
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: branchId
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkingHours"
+    put:
+      tags: [Schedule]
+      summary: Set doctor working hours (doctor can set own, ADMIN/HEAD can set any)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branchId: { type: integer }
+                schedule:
+                  type: array
+                  description: "Недельное расписание: дни недели (0-6) с часами работы. Дни с isWorking=false отменены"
+                  items:
+                    $ref: "#/components/schemas/WorkingHoursDay"
+                slotDurationMin: { type: integer, default: 30 }
+                exceptions:
+                  type: array
+                  nullable: true
+                  description: "Исключения - отмененные конкретные даты"
+                  items:
+                    type: object
+                    properties:
+                      date: { type: string, format: date }
+                      reason: { type: string, nullable: true }
+              required: [branchId, schedule]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkingHours"
+
+  /schedule/slots:
+    get:
+      tags: [Schedule]
+      summary: Get schedule slots (free/busy)
+      parameters:
+        - name: branchId
+          in: query
+          required: true
+          schema: { type: integer }
+        - name: doctorId
+          in: query
+          required: true
+          schema: { type: integer }
+          description: "For DOCTOR role, must be own ID. For ADMIN/HEAD, can be any doctor ID"
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date-time }
+        - name: roomId
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  doctorId: { type: integer }
+                  branchId: { type: integer }
+                  from: { type: string, format: date-time }
+                  to: { type: string, format: date-time }
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        start: { type: string, format: date-time }
+                        end: { type: string, format: date-time }
+                        free: { type: boolean }
+                        appointmentId: { type: integer, nullable: true }
 
   /appointments:
     get:
@@ -620,6 +785,87 @@ paths:
       responses:
         "201":
           description: Created
+
+  /branches:
+    get:
+      tags: [Branches]
+      summary: Get branch list
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Branch"
+    post:
+      tags: [Branches]
+      summary: Create branch (ADMIN/HEAD)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                address: { type: string, nullable: true }
+                phone: { type: string, nullable: true }
+                startTime: { type: string, format: time, nullable: true }
+                endTime: { type: string, format: time, nullable: true }
+              required: [name]
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branch"
+
+  /branches/{id}:
+    get:
+      tags: [Branches]
+      summary: Get branch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branch"
+    patch:
+      tags: [Branches]
+      summary: Update branch (ADMIN/HEAD)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                address: { type: string, nullable: true }
+                phone: { type: string, nullable: true }
+                startTime: { type: string, format: time, nullable: true }
+                endTime: { type: string, format: time, nullable: true }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branch"
 
   /patients/{id}:
     get:

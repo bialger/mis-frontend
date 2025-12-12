@@ -2,24 +2,28 @@
   "users": [
     {
       "id": 1,
+      "login": "petrova_admin",
       "name": "Ирина Петрова",
       "role": "ADMIN",
       "branchScope": [1, 2]
     },
     {
       "id": 2,
-      "name": "Доктор Иванов",
+      "login": "ivanov_doctor",
+      "name": "Петр Иванов",
       "role": "DOCTOR",
       "branchScope": [1]
     },
     {
       "id": 3,
-      "name": "Главный врач Сидоров",
+      "login": "sidorov_head",
+      "name": "Игорь Сидоров",
       "role": "HEAD",
       "branchScope": [1, 2]
     },
     {
       "id": 4,
+      "login": "sysadmin",
       "name": "Системный администратор",
       "role": "SYSADMIN",
       "branchScope": [1, 2]
@@ -29,7 +33,7 @@
     {
       "user": {
         "id": 3,
-        "name": "Главный врач Сидоров",
+        "name": "Игорь Сидоров",
         "role": "HEAD"
       },
       "branchScope": [1, 2],
@@ -48,13 +52,17 @@
       "id": 1,
       "name": "Центральный филиал",
       "address": "г. Москва, ул. Ленина, д. 10",
-      "phone": "+7 (495) 123-45-67"
+      "phone": "+7 (495) 123-45-67",
+      "startTime": "08:00",
+      "endTime": "20:00"
     },
     {
       "id": 2,
       "name": "Филиал на Парковой",
       "address": "г. Москва, ул. Парковая, д. 5",
-      "phone": "+7 (495) 234-56-78"
+      "phone": "+7 (495) 234-56-78",
+      "startTime": "09:00",
+      "endTime": "18:00"
     }
   ],
   "rooms": [
@@ -221,7 +229,7 @@
     {
       "id": 1,
       "branchId": 1,
-      "doctorId": 1,
+      "doctorId": 2,
       "roomId": 2,
       "start": "2025-12-12T09:00:00Z",
       "end": "2025-12-12T09:30:00Z",
@@ -247,10 +255,10 @@
     {
       "id": 2,
       "branchId": 1,
-      "doctorId": 1,
+      "doctorId": 3,
       "roomId": 1,
-      "start": "2025-12-12T10:00:00Z",
-      "end": "2025-12-12T10:30:00Z",
+      "start": "2025-12-12T12:00:00Z",
+      "end": "2025-12-12T12:30:00Z",
       "status": "CONFIRMED",
       "source": "ONLINE",
       "patient": {
@@ -517,5 +525,116 @@
         "changedBy": 2
       }
     ]
-  }
+  },
+  "workingHours": [
+    {
+      "doctorId": 2,
+      "branchId": 1,
+      "slotDurationMin": 30,
+      "schedule": [
+        {
+          "dayOfWeek": 0,
+          "startTime": null,
+          "endTime": null,
+          "isWorking": false
+        },
+        {
+          "dayOfWeek": 1,
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 2,
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 3,
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 4,
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 5,
+          "startTime": "09:00",
+          "endTime": "18:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 6,
+          "startTime": "10:00",
+          "endTime": "14:00",
+          "isWorking": true
+        }
+      ],
+      "exceptions": [
+        {
+          "date": "2025-12-25",
+          "reason": "Выходной день"
+        },
+        {
+          "date": "2025-12-31",
+          "reason": "Новогодний выходной"
+        }
+      ]
+    },
+    {
+      "doctorId": 3,
+      "branchId": 1,
+      "slotDurationMin": 30,
+      "schedule": [
+        {
+          "dayOfWeek": 0,
+          "startTime": null,
+          "endTime": null,
+          "isWorking": false
+        },
+        {
+          "dayOfWeek": 1,
+          "startTime": "08:00",
+          "endTime": "17:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 2,
+          "startTime": "08:00",
+          "endTime": "17:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 3,
+          "startTime": "08:00",
+          "endTime": "17:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 4,
+          "startTime": "08:00",
+          "endTime": "17:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 5,
+          "startTime": "08:00",
+          "endTime": "17:00",
+          "isWorking": true
+        },
+        {
+          "dayOfWeek": 6,
+          "startTime": null,
+          "endTime": null,
+          "isWorking": false
+        }
+      ],
+      "exceptions": []
+    }
+  ]
 }
