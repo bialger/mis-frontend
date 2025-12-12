@@ -32,7 +32,8 @@
     color: var(--secondary-color);
     font-weight: 600;
     cursor: default;
-    pointer-events: auto;
+    pointer-events: none;
+    opacity: 0.9;
 }
 
 .m-dashboard {
@@ -229,12 +230,169 @@
     align-self: flex-start;
 }
 
+/* Tabs */
+.m-inventory-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0;
+}
+
+.m-tab-button {
+    padding: 0.875rem 2rem;
+    background: var(--white);
+    border: 2px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    color: var(--muted-color);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: -2px;
+    position: relative;
+    top: 2px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.m-tab-button:hover {
+    color: var(--primary-color);
+    background: var(--light-color);
+    border-color: var(--border-color);
+    transform: translateY(-2px);
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.m-tab-button.is-active {
+    color: var(--secondary-color);
+    background: var(--white);
+    border-color: var(--secondary-color);
+    border-bottom-color: var(--white);
+    font-weight: 600;
+    box-shadow: 0 -4px 8px rgba(52, 152, 219, 0.15);
+    z-index: 1;
+}
+
+.m-tab-button.is-active:hover {
+    transform: translateY(0);
+    box-shadow: 0 -4px 8px rgba(52, 152, 219, 0.15);
+}
+
+/* Modal */
+.m-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.m-modal-content {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.m-modal-content h3 {
+    margin-bottom: 1.5rem;
+}
+
+.m-modal-content label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.m-modal-content label > * {
+    margin-top: 0.5rem;
+}
+
+/* Audit styles */
+.m-audit-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.m-audit-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.m-audit-table-wrapper {
+    overflow-x: auto;
+}
+
+.m-audit-diff {
+    font-size: 0.875rem;
+    color: var(--muted-color);
+    max-width: 300px;
+    word-break: break-word;
+}
+
+/* Inventory styles */
+.m-inventory-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.m-inventory-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.m-inventory-stock-wrapper,
+.m-inventory-movement-wrapper {
+    overflow-x: auto;
+}
+
+.m-row-warning {
+    background-color: #fff3cd !important;
+}
+
+.m-status-ok {
+    background-color: var(--success-color);
+    color: var(--white);
+}
+
+.m-status-warning {
+    background-color: var(--warning-color);
+    color: var(--white);
+}
+
+.m-button--small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.m-inventory-operations {
+    margin-top: 1rem;
+}
+
 .m-table {
     display: grid;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     margin-top: 1rem;
+    width: 100%;
 }
 
 .m-table thead {
@@ -263,6 +421,11 @@
     grid-template-columns: repeat(5, minmax(150px, 1fr));
 }
 
+.m-table.m-table--doctors thead tr,
+.m-table.m-table--doctors tbody tr {
+    grid-template-columns: 2fr 1fr 2fr 1.5fr 1fr;
+}
+
 .m-table th,
 .m-table td {
     padding: 1rem;
@@ -271,6 +434,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    min-width: 0;
 }
 
 .m-table th:last-child,
