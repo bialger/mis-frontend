@@ -27,7 +27,7 @@ createApp({
       branches: [],
       editingBranch: null,
       showBranchModal: false,
-      branchForm: {name: '', address: '', phone: ''},
+      branchForm: {name: '', address: '', phone: '', startTime: '08:00', endTime: '20:00'},
 
       rooms: [],
       editingRoom: null,
@@ -74,6 +74,18 @@ createApp({
   },
   async mounted() {
     await this.init();
+    // Обработчик клавиши Escape для закрытия модальных окон
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (this.showUserModal) this.closeUserModal();
+        else if (this.showBranchModal) this.closeBranchModal();
+        else if (this.showRoomModal) this.closeRoomModal();
+        else if (this.showServiceModal) this.closeServiceModal();
+        else if (this.showTemplateModal) this.closeTemplateModal();
+        else if (this.showIconModal) this.closeIconModal();
+        else if (this.showSmsModal) this.closeSmsModal();
+      }
+    });
   },
   methods: {
     async init() {
@@ -212,10 +224,12 @@ createApp({
         this.branchForm = {
           name: branch.name || '',
           address: branch.address || '',
-          phone: branch.phone || ''
+          phone: branch.phone || '',
+          startTime: branch.startTime || '08:00',
+          endTime: branch.endTime || '20:00'
         };
       } else {
-        this.branchForm = {name: '', address: '', phone: ''};
+        this.branchForm = {name: '', address: '', phone: '', startTime: '08:00', endTime: '20:00'};
       }
       this.showBranchModal = true;
     },
@@ -223,6 +237,7 @@ createApp({
     closeBranchModal() {
       this.showBranchModal = false;
       this.editingBranch = null;
+      this.branchForm = {name: '', address: '', phone: '', startTime: '08:00', endTime: '20:00'};
     },
 
     async saveBranch() {
@@ -273,6 +288,7 @@ createApp({
     closeRoomModal() {
       this.showRoomModal = false;
       this.editingRoom = null;
+      this.roomForm = {branchId: null, name: '', number: ''};
     },
 
     async saveRoom() {
@@ -343,6 +359,13 @@ createApp({
     closeServiceModal() {
       this.showServiceModal = false;
       this.editingService = null;
+      this.serviceForm = {
+        branchId: null,
+        name: '',
+        price: 0,
+        durationMin: 30,
+        inventoryAutoWriteOff: []
+      };
     },
 
     async saveService() {
@@ -417,6 +440,19 @@ createApp({
     closeTemplateModal() {
       this.showTemplateModal = false;
       this.editingTemplate = null;
+      this.templateForm = {
+        name: '',
+        specialty: '',
+        sections: {
+          complaints: '',
+          anamnesis: '',
+          examination: '',
+          diagnoses: [],
+          orders: '',
+          procedures: '',
+          epicrisis: ''
+        }
+      };
     },
 
     async saveTemplate() {
@@ -483,6 +519,7 @@ createApp({
     closeIconModal() {
       this.showIconModal = false;
       this.editingIcon = null;
+      this.iconForm = {id: '', emoji: '', label: '', isActive: true};
     },
 
     async saveIcon() {

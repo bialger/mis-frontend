@@ -287,15 +287,11 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 10001;
     padding: 1rem;
-}
-
-.m-modal.is-visible {
-    display: flex;
 }
 
 .m-modal-content {
@@ -849,6 +845,106 @@
     font-weight: 500;
 }
 
+/* Login page */
+.l-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.m-login-card {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.m-login-title {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.m-login-error {
+    background: #fee;
+    color: var(--danger-color);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.m-login-error.is-visible {
+    display: block;
+}
+
+/* Patient booking page */
+.m-public-hero {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.m-public-hero h1 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.m-booking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .m-booking-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.m-slot-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.5rem;
+}
+
+.m-slot-card {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--white);
+    transition: all 0.2s;
+}
+
+.m-slot-card:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.m-slot-card.is-busy {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f6f6f6;
+}
+
+.m-slot-card.is-selected {
+    border-color: var(--secondary-color);
+    background: #e8f4ff;
+}
+
+.m-info-badge {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    background: var(--bg-light);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
 /* Tabs */
 .m-tabs {
     display: flex;
@@ -1231,20 +1327,17 @@
 
 /* Settings modal - overrides default modal for visibility control */
 .m-settings-section .m-modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.m-settings-section .m-modal.is-visible {
-    display: flex;
+    z-index: 10001;
+    padding: 1rem;
 }
 
 .m-settings-section .m-modal-content {
@@ -1289,4 +1382,3 @@
     background: var(--muted-color);
     color: white;
 }
-

@@ -232,6 +232,379 @@
     margin-top: 0.25rem;
 }
 
+/* Calendar styles */
+.m-calendar-navigation {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.m-calendar-month-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-left: 1rem;
+}
+
+.m-calendar-wrapper {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.m-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Week view calendar */
+.m-calendar-week-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 800px;
+}
+
+.m-calendar-hour-header {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+.m-calendar-hour-cell {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    border-right: 1px solid var(--border-color);
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-calendar-day-header {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.m-calendar-day-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.m-calendar-day-number-week {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.m-calendar-day-empty {
+    background: var(--bg-light);
+    min-height: 100px;
+}
+
+.m-calendar-day {
+    background: var(--white);
+    min-height: 120px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.m-calendar-day:hover {
+    background: var(--bg-light);
+}
+
+.m-calendar-day-today {
+    background: #e3f2fd;
+    border: 2px solid var(--primary-color);
+}
+
+.m-calendar-day-number {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.m-calendar-day-slots {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+    max-height: 80px;
+}
+
+.m-calendar-slot {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+}
+
+.m-calendar-slot-free {
+    background: #c8e6c9;
+    color: #2e7d32;
+}
+
+.m-calendar-slot-free:hover {
+    background: #a5d6a7;
+    transform: scale(1.05);
+}
+
+.m-calendar-slot-busy {
+    background: #ffcdd2;
+    color: #c62828;
+    cursor: not-allowed;
+}
+
+.m-calendar-slot-busy:hover {
+    background: #ef9a9a;
+}
+
+.m-calendar-slot-time {
+    font-weight: 500;
+}
+
+.m-calendar-slot-busy-icon {
+    font-size: 0.5rem;
+}
+
+/* Week view cells */
+.m-calendar-week-cell {
+    background: var(--white);
+    min-height: 42px;
+    max-height: 42px;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow: hidden;
+}
+
+.m-calendar-week-cell-today {
+    background: #e3f2fd;
+    border-left: 2px solid var(--primary-color);
+}
+
+.m-calendar-week-cell-off {
+    background: #f9f9f9;
+}
+
+.m-calendar-week-cell .m-calendar-slot {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.1rem;
+}
+
+.m-calendar-slot-disabled {
+    background: var(--bg-light);
+    color: var(--muted-color);
+    cursor: default;
+}
+
+.m-working-hours-card {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.m-working-hours-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.m-working-hours-card__title {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.m-working-hours-card__hint {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
+.m-working-hours-week {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.m-working-hours-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.m-working-hours-day {
+    min-width: 120px;
+    font-weight: 600;
+}
+
+.m-working-hours-exceptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.m-working-hours-exceptions__form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.m-working-hours-exceptions__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.m-working-hours-exception {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+/* Modal styles */
+.m-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.m-modal {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.m-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.m-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.m-modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.m-modal-close:hover {
+    background: var(--bg-light);
+}
+
+.m-modal-body {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.m-modal-field {
+    margin-bottom: 1.5rem;
+}
+
+.m-modal-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.m-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.m-modal-footer .m-button {
+    min-width: 120px;
+}
+
+.m-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Patient card styles */
 .m-patients-search {
     display: flex;
@@ -281,4 +654,3 @@
 .m-link:hover {
     text-decoration: underline;
 }
-

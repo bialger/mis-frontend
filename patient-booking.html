@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Онлайн-запись к врачу</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/module.css">
+  <link rel="stylesheet" href="css/state.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="js/api.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script type="module" src="js/vue/patient-booking.js"></script>
+</head>
+<body>
+  <main class="l-main" style="padding: 1.5rem;">
+    <section class="m-section" id="patient-booking-app">
+      <div class="m-public-hero">
+        <h1>Онлайн-запись к врачу</h1>
+        <p class="m-info-badge">Выберите филиал, врача и время визита.</p>
+      </div>
+
+      <div v-if="error" class="m-error-message">{{ error }}</div>
+      <div v-else class="m-booking-grid">
+        <div class="m-card" style="padding: 1.25rem;">
+          <h3 style="margin-top:0;">Выбор врача и времени</h3>
+          <div class="m-form-group">
+            <label class="m-form-label">Филиал</label>
+            <select v-model="selectedBranchId" class="m-select is-focusable">
+              <option v-for="branch in branches" :key="branch.id" :value="branch.id">{{ branch.name }}</option>
+            </select>
+          </div>
+          <div class="m-form-group">
+            <label class="m-form-label">Врач</label>
+            <select v-model="selectedDoctorId" class="m-select is-focusable">
+              <option v-for="doctor in doctors" :key="doctor.id" :value="doctor.id">{{ doctor.name }}</option>
+            </select>
+          </div>
+          <div class="m-form-group">
+            <label class="m-form-label">Дата</label>
+            <input type="date" v-model="selectedDate" class="m-input is-focusable">
+          </div>
+          <div class="m-form-group">
+            <button class="m-button is-hoverable-button" @click="loadSlots" :disabled="loadingSlots">Обновить слоты</button>
+          </div>
+          <div v-if="loadingSlots" class="m-preloader">Загрузка свободных слотов...</div>
+          <div v-else>
+            <p v-if="slots.length === 0" class="m-info-badge">Свободных слотов не найдено на выбранный день.</p>
+            <div class="m-slot-list">
+              <div v-for="slot in slots" :key="slot.start"
+                   class="m-slot-card"
+                   :class="{ 'is-busy': !slot.free, 'is-selected': selectedSlot && selectedSlot.start === slot.start }"
+                   @click="selectSlot(slot)">
+                <div class="m-calendar-slot-time">{{ formatSlot(slot.start) }} - {{ formatSlot(slot.end) }}</div>
+                <div style="font-size: 0.85rem; color: var(--muted-color);">{{ slot.free ? 'Свободно' : 'Занято' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="m-card" style="padding: 1.25rem;">
+          <h3 style="margin-top:0;">Данные пациента</h3>
+          <div class="m-form-group">
+            <label class="m-form-label">ФИО <span class="m-form-required">*</span></label>
+            <input type="text" v-model="patientForm.fullName" class="m-input is-focusable" placeholder="Иванов Иван Иванович">
+          </div>
+          <div class="m-form-group">
+            <label class="m-form-label">Телефон <span class="m-form-required">*</span></label>
+            <input type="tel" v-model="patientForm.phone" class="m-input is-focusable" placeholder="+7 (999) 123-45-67">
+          </div>
+          <div class="m-form-group">
+            <label class="m-form-label">Комментарий (опционально)</label>
+            <textarea v-model="patientForm.comment" class="m-input is-focusable" rows="3" placeholder="Пожелания, симптомы, удобное время"></textarea>
+          </div>
+          <div class="m-form-actions">
+            <button class="m-button m-button--primary is-hoverable-button"
+                    :disabled="!canSubmit || loadingBooking"
+                    @click="book">
+              {{ loadingBooking ? 'Создаём запись...' : 'Записаться' }}
+            </button>
+          </div>
+          <div v-if="successMessage" class="m-info-badge" style="margin-top: 0.5rem; background:#e8f5e9; color:#2e7d32;">
+            {{ successMessage }}
+          </div>
+          <div v-if="bookingError" class="m-error-message" style="margin-top:0.5rem;">{{ bookingError }}</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
