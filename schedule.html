@@ -18,7 +18,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/schedule.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/schedule-app.js"></script>
 </head>
 
 <body>
@@ -30,34 +31,44 @@
                 <section class="m-section">
                     <h2>Расписание и календарь</h2>
 
-                    <div class="m-schedule-controls" style="margin-bottom: 1.5rem;">
-                        <label>
-                            Филиал:
-                            <select id="branch-select" class="m-select is-focusable"></select>
-                        </label>
-                        <label>
-                            Дата:
-                            <input type="date" id="schedule-date" class="m-input is-focusable">
-                        </label>
-                        <button id="load-schedule-btn" class="m-button is-hoverable-button">Загрузить</button>
-                    </div>
-
-                    <div id="schedule-content">
-                        <p>Выберите филиал и дату для просмотра расписания</p>
-                    </div>
-
-
-                    <template id="schedule-slot-template">
-                        <div class="m-schedule-slot" data-appointment-id="">
-                            <div class="m-schedule-slot-time"></div>
-                            <div class="m-schedule-slot-content">
-                                <div class="m-schedule-slot-patient"></div>
-                                <div class="m-schedule-slot-status"></div>
-                                <div class="m-schedule-slot-icons"></div>
-                            </div>
-                            <a href="#" class="m-schedule-slot-link">Открыть</a>
+                    <div id="schedule-app">
+                        <div class="m-schedule-controls" style="margin-bottom: 1.5rem;">
+                            <label>
+                                Филиал:
+                                <select v-model="currentBranchId" class="m-select is-focusable">
+                                    <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+                                        {{ branch.name }}
+                                    </option>
+                                </select>
+                            </label>
+                            <label>
+                                Дата:
+                                <input type="date" v-model="currentDate" class="m-input is-focusable">
+                            </label>
                         </div>
-                    </template>
+
+                        <div id="schedule-content">
+                            <div v-if="loading" class="m-preloader">Загрузка...</div>
+                            <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                            <div v-else-if="appointments.length === 0">
+                                <p>На выбранную дату нет записей</p>
+                            </div>
+                            <div v-else>
+                                <h3>Записи на {{ formatDateFull(currentDate) }}</h3>
+                                <div v-for="apt in appointments" :key="apt.id" class="m-schedule-slot" :data-appointment-id="apt.id">
+                                    <div class="m-schedule-slot-time">{{ formatTime(apt.start) }}</div>
+                                    <div class="m-schedule-slot-content">
+                                        <div class="m-schedule-slot-patient">{{ apt.patient?.fullName || 'Пациент не указан' }}</div>
+                                        <div class="m-schedule-slot-status" :class="'m-status-' + apt.status.toLowerCase()">
+                                            {{ getStatusText(apt.status) }}
+                                        </div>
+                                        <div class="m-schedule-slot-icons" v-html="apt.patient?.iconsEmoji || ''"></div>
+                                    </div>
+                                    <a :href="'appointment-detail.html?id=' + apt.id" class="m-schedule-slot-link">Открыть</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
 

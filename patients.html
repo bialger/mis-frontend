@@ -18,7 +18,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/patients.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/patients-app.js"></script>
 </head>
 
 <body>
@@ -30,34 +31,43 @@
                 <section class="m-section">
                     <h2>Управление пациентами</h2>
 
-                    <div class="m-patients-search" style="margin-bottom: 1.5rem;">
-                        <input type="text" id="patient-search" class="m-input is-focusable"
-                            placeholder="Поиск по ФИО или телефону..."
-                            style="width: 100%; max-width: 400px; margin-right: 1rem;">
-                        <button id="search-btn" class="m-button is-hoverable-button">Поиск</button>
-                        <button id="create-patient-btn" class="m-button is-hoverable-button">Создать пациента</button>
+                    <div id="patients-app">
+                        <div class="m-patients-search" style="margin-bottom: 1.5rem;">
+                            <input type="text" v-model="searchQuery" @keyup.enter="searchPatients()" 
+                                class="m-input is-focusable" placeholder="Поиск по ФИО или телефону..."
+                                style="width: 100%; max-width: 400px; margin-right: 1rem;">
+                            <button @click="searchPatients()" class="m-button is-hoverable-button">Поиск</button>
+                            <button @click="createPatient()" class="m-button is-hoverable-button">Создать пациента</button>
+                        </div>
+
+                        <div id="patients-content">
+                            <div v-if="loading" class="m-preloader">Загрузка...</div>
+                            <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                            <div v-else-if="patients.length === 0">
+                                <p>Пациенты не найдены</p>
+                            </div>
+                            <div v-else>
+                                <h3>Найдено пациентов: {{ patients.length }}</h3>
+                                <div class="m-patients-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                                    <article v-for="patient in patients" :key="patient.id" 
+                                        class="m-patient-card is-hoverable" :data-patient-id="patient.id">
+                                        <div class="m-patient-header">
+                                            <h3 class="m-patient-name">{{ patient.fullName || 'Без имени' }}</h3>
+                                            <div class="m-patient-icons" v-html="patient.iconsEmoji || ''"></div>
+                                        </div>
+                                        <div class="m-patient-info">
+                                            <p class="m-patient-phone">Телефон: {{ patient.phone || 'не указан' }}</p>
+                                            <p v-if="patient.dob" class="m-patient-dob">Дата рождения: {{ formatDate(patient.dob) }}</p>
+                                        </div>
+                                        <div class="m-patient-actions">
+                                            <a :href="'patient-detail.html?id=' + patient.id" 
+                                                class="m-button m-button--view is-hoverable-button">Открыть карточку</a>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div id="patients-content">
-                        <p>Введите поисковый запрос для поиска пациентов</p>
-                    </div>
-
-
-                    <template id="patient-item-template">
-                        <article class="m-patient-card is-hoverable" data-patient-id="">
-                            <div class="m-patient-header">
-                                <h3 class="m-patient-name"></h3>
-                                <div class="m-patient-icons"></div>
-                            </div>
-                            <div class="m-patient-info">
-                                <p class="m-patient-phone"></p>
-                                <p class="m-patient-dob"></p>
-                            </div>
-                            <div class="m-patient-actions">
-                                <a href="#" class="m-button m-button--view is-hoverable-button">Открыть карточку</a>
-                            </div>
-                        </article>
-                    </template>
                 </section>
             </div>
 

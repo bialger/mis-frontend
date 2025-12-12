@@ -45,41 +45,44 @@
         }
     </style>
     <script src="js/api.js"></script>
-    <script src="js/login.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/login-app.js"></script>
 </head>
 
 <body>
     <div class="l-login-container">
         <div class="m-login-card">
             <h1 class="m-login-title">Вход в систему</h1>
-            <div id="login-error" class="m-login-error"></div>
-            <form id="login-form" class="m-appointment-form">
-                <div class="m-form-group">
-                    <label for="login" class="m-form-label">Логин <span class="m-form-required">*</span></label>
-                    <input 
-                        type="text" 
-                        id="login" 
-                        name="login" 
-                        class="m-input is-focusable" 
-                        required 
-                        autocomplete="username"
-                        placeholder="Введите логин или имя пользователя">
-                </div>
-                <div class="m-form-group">
-                    <label for="password" class="m-form-label">Пароль <span class="m-form-required">*</span></label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        class="m-input is-focusable" 
-                        required
-                        autocomplete="current-password"
-                        placeholder="Введите пароль">
-                </div>
-                <button type="submit" class="m-button is-hoverable-button is-active-button" id="login-submit">
-                    Войти
-                </button>
-            </form>
+            <div id="login-app">
+                <div v-if="error" class="m-login-error is-visible">{{ error }}</div>
+                <form @submit.prevent="handleSubmit" class="m-appointment-form">
+                    <div class="m-form-group">
+                        <label for="login" class="m-form-label">Логин <span class="m-form-required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="login" 
+                            v-model="formData.login"
+                            class="m-input is-focusable" 
+                            required 
+                            autocomplete="username"
+                            placeholder="Введите логин или имя пользователя">
+                    </div>
+                    <div class="m-form-group">
+                        <label for="password" class="m-form-label">Пароль <span class="m-form-required">*</span></label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            v-model="formData.password"
+                            class="m-input is-focusable" 
+                            required
+                            autocomplete="current-password"
+                            placeholder="Введите пароль">
+                    </div>
+                    <button type="submit" class="m-button is-hoverable-button is-active-button" :disabled="loading">
+                        {{ loading ? 'Вход...' : 'Войти' }}
+                    </button>
+                </form>
+            </div>
             <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--muted-color); text-align: center;">
                 <p>Для тестирования используйте:</p>
                 <p><strong>Логин:</strong> Ирина Петрова (или 1) - Администратор</p>

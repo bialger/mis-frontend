@@ -18,7 +18,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/doctors.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/doctors-app.js"></script>
 </head>
 
 <body>
@@ -29,8 +30,50 @@
             <div class="l-main-content">
                 <section class="m-section">
                     <h2>Управление врачами</h2>
-                    <div id="doctors-content">
-                        <p>Загрузка...</p>
+                    <div id="doctors-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else>
+                            <article class="m-card is-hoverable" style="margin-bottom: 2rem;">
+                                <h3>Статистика врачей</h3>
+                                <ul>
+                                    <li>Всего врачей: <strong>{{ totalDoctors }}</strong></li>
+                                    <li>Активных специалистов: <strong>{{ activeDoctors }}</strong></li>
+                                    <li>Всего записей на неделю: <strong>{{ totalAppointments }}</strong></li>
+                                    <li>Средняя загруженность: <strong>{{ avgLoad }} записей/врач</strong></li>
+                                </ul>
+                            </article>
+                            <div class="m-grid m-grid--doctors" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                <article v-for="doctor in doctors" :key="doctor.id" class="m-card is-hoverable">
+                                    <h3>{{ doctor.name || 'Без имени' }}</h3>
+                                    <p><strong>Роль:</strong> {{ getRoleText(doctor.role) }}</p>
+                                    <p><strong>Филиалы:</strong> {{ getBranchNames(doctor) }}</p>
+                                    <p><strong>Записей на неделю:</strong> {{ getStats(doctor.id).total }}</p>
+                                    <p><strong>Подтверждено:</strong> {{ getStats(doctor.id).confirmed }}</p>
+                                </article>
+                            </div>
+                            <h3 style="margin-top: 2rem;">Расписание врачей</h3>
+                            <table class="m-table m-table--doctors">
+                                <thead>
+                                    <tr>
+                                        <th>Врач</th>
+                                        <th>Роль</th>
+                                        <th>Филиалы</th>
+                                        <th>Записей на неделю</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="doctor in doctors" :key="doctor.id">
+                                        <td>{{ doctor.name || 'Без имени' }}</td>
+                                        <td>{{ getRoleText(doctor.role) }}</td>
+                                        <td>{{ getBranchNames(doctor) }}</td>
+                                        <td>{{ getStats(doctor.id).total }}</td>
+                                        <td>{{ getStatusText(doctor.id) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
             </div>

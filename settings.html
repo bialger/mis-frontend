@@ -18,6 +18,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/settings-app.js"></script>
 </head>
 
 <body>
@@ -28,7 +30,8 @@
             <div class="l-main-content">
                 <section class="m-section">
                     <h2>Настройки системы</h2>
-                    <div class="m-grid m-grid--reports">
+                    <div id="settings-app">
+                        <div class="m-grid m-grid--reports">
                         <article class="m-card is-hoverable">
                             <h3>Общие настройки</h3>
                             <ul>
@@ -47,6 +50,7 @@
                                 <li>Логирование действий</li>
                             </ul>
                         </article>
+                        </div>
                     </div>
                 </section>
             </div>

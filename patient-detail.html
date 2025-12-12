@@ -15,7 +15,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/patient-detail.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/patient-detail-app.js"></script>
 </head>
 
 <body>
@@ -24,8 +25,37 @@
     <main class="l-main">
         <section class="m-section">
             <h2>Карточка пациента</h2>
-            <div id="patient-detail-content">
-                <p>Загрузка...</p>
+            <div id="patient-detail-app">
+                <div v-if="loading" class="m-preloader">Загрузка...</div>
+                <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                <div v-else-if="patient" class="m-patient-detail">
+                    <div class="m-patient-header">
+                        <h3>{{ patient.fullName || 'Без имени' }}</h3>
+                        <div v-if="patient.icons && patient.icons.length > 0" class="m-patient-icons">
+                            {{ patientIcons }}
+                        </div>
+                    </div>
+                    <div class="m-patient-info">
+                        <h4>Контактная информация</h4>
+                        <p><strong>Телефон:</strong> {{ patient.phone || 'Не указано' }}</p>
+                        <p v-if="patient.dob"><strong>Дата рождения:</strong> {{ formatDate(patient.dob) }}</p>
+                    </div>
+                    <div class="m-patient-history">
+                        <h4>История визитов</h4>
+                        <div v-if="appointments.length === 0">
+                            <p>История визитов отсутствует</p>
+                        </div>
+                        <div v-else>
+                            <p>Всего визитов: {{ appointments.length }}</p>
+                            <div class="m-appointments-list">
+                                <div v-for="apt in appointments" :key="apt.id" class="m-appointment-item">
+                                    <p><strong>{{ formatDateTime(apt.start) }}</strong> - {{ getStatusText(apt.status) }}</p>
+                                    <a :href="'appointment-detail.html?id=' + apt.id" class="m-link">Открыть запись</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>

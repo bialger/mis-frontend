@@ -18,7 +18,8 @@
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/reports.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/reports-app.js"></script>
 </head>
 
 <body>
@@ -29,8 +30,63 @@
             <div class="l-main-content">
                 <section class="m-section">
                     <h2>Отчеты и аналитика</h2>
-                    <div id="reports-content">
-                        <p>Загрузка...</p>
+                    <div id="reports-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else>
+                            <div class="m-grid m-grid--reports" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                <article class="m-card is-hoverable">
+                                    <h3>Статистика работы</h3>
+                                    <ul>
+                                        <li>Пациентов за период: <strong>{{ stats.totalPatients }}</strong></li>
+                                        <li>Записей за период: <strong>{{ stats.totalAppointments }}</strong></li>
+                                        <li>Врачей в системе: <strong>{{ stats.totalDoctors }}</strong></li>
+                                        <li>Онлайн-записей: <strong>{{ stats.onlineAppointments }}</strong></li>
+                                        <li>Записей через регистратуру: <strong>{{ stats.frontDeskAppointments }}</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Ключевые показатели</h3>
+                                    <ul>
+                                        <li>Среднее время приема: <strong>{{ stats.avgAppointmentTime }} мин</strong></li>
+                                        <li>Процент отмен записей: <strong>{{ stats.cancelRate }}%</strong></li>
+                                        <li>Процент неявок: <strong>{{ stats.noShowRate }}%</strong></li>
+                                        <li>Удовлетворенность пациентов: <strong>{{ stats.satisfactionRate }}%</strong></li>
+                                        <li>Заполненность расписания: <strong>{{ stats.scheduleLoad }}%</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Статусы записей</h3>
+                                    <ul>
+                                        <li>Записан: <strong>{{ stats.bookedCount }}</strong></li>
+                                        <li>Подтвержден: <strong>{{ stats.confirmedCount }}</strong></li>
+                                        <li>Отменен: <strong>{{ stats.canceledCount }}</strong></li>
+                                        <li>Не пришел: <strong>{{ stats.noShowCount }}</strong></li>
+                                    </ul>
+                                </article>
+                                
+                                <article class="m-card is-hoverable">
+                                    <h3>Финансовые отчеты</h3>
+                                    <ul>
+                                        <li>Общая сумма: <strong>{{ formatCurrency(stats.totalRevenue) }} ₽</strong></li>
+                                        <li>Оплачено: <strong>{{ formatCurrency(stats.paidRevenue) }} ₽</strong></li>
+                                        <li>К оплате: <strong>{{ formatCurrency(stats.totalRevenue - stats.paidRevenue) }} ₽</strong></li>
+                                        <li>Средний чек: <strong>{{ stats.totalAppointments > 0 ? formatCurrency(Math.round(stats.totalRevenue / stats.totalAppointments)) : 0 }} ₽</strong></li>
+                                    </ul>
+                                </article>
+                            </div>
+                            
+                            <article class="m-card is-hoverable">
+                                <h3>Анализ эффективности</h3>
+                                <ul>
+                                    <li>Конверсия онлайн-записей: <strong>{{ stats.totalAppointments > 0 ? Math.round((stats.onlineAppointments / stats.totalAppointments) * 100) : 0 }}%</strong></li>
+                                    <li>Записей на врача: <strong>{{ stats.totalDoctors > 0 ? Math.round(stats.totalAppointments / stats.totalDoctors) : 0 }}</strong></li>
+                                    <li>Записей на пациента: <strong>{{ stats.totalPatients > 0 ? Math.round(stats.totalAppointments / stats.totalPatients * 10) / 10 : 0 }}</strong></li>
+                                </ul>
+                            </article>
+                        </div>
                     </div>
                 </section>
             </div>
