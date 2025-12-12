@@ -361,6 +361,27 @@ const api = {
   },
 
 
+  async updatePatient(id, data) {
+    try {
+      return await apiRequest(
+          `patients/${id}`, {method: 'PUT', body: JSON.stringify(data)});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async updatePatientIcon(id, iconId, action) {
+    try {
+      return await apiRequest(
+          `patients/${id}/icons`,
+          {method: 'POST', body: JSON.stringify({iconId, action})});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
   async getMedicalRecord(appointmentId) {
     try {
       return await apiRequest(`appointments/${appointmentId}/medical-record`);
@@ -381,6 +402,75 @@ const api = {
       return await apiRequest(
           `appointments/${appointmentId}/medical-record`,
           {method: 'PUT', body: JSON.stringify(data)});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async updatePayment(appointmentId, data) {
+    try {
+      return await apiRequest(
+          `appointments/${appointmentId}/payment`,
+          {method: 'PUT', body: JSON.stringify(data)});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async getStatusHistory(appointmentId) {
+    try {
+      return await apiRequest(`appointments/${appointmentId}/status-history`);
+    } catch (error) {
+      const mockData = await loadMockApi();
+      if (mockData && mockData.statusHistory && mockData.statusHistory[appointmentId]) {
+        return mockData.statusHistory[appointmentId];
+      }
+      return [];
+    }
+  },
+
+
+  async getTemplates(specialty) {
+    try {
+      const query = specialty ? `?specialty=${encodeURIComponent(specialty)}` : '';
+      const response = await apiRequest(`templates${query}`);
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      const mockData = await getFromMockApi('templates');
+      if (!mockData) return [];
+      return specialty ?
+          mockData.filter(t => t.specialty === specialty) :
+          mockData;
+    }
+  },
+
+
+  async saveTemplate(data) {
+    try {
+      return await apiRequest(
+          'templates', {method: 'POST', body: JSON.stringify(data)});
+    } catch (error) {
+      return {id: Date.now()};
+    }
+  },
+
+
+  async signMedicalRecord(appointmentId) {
+    try {
+      return await apiRequest(
+          `appointments/${appointmentId}/sign`, {method: 'POST'});
+    } catch (error) {
+      return {success: true};
+    }
+  },
+
+
+  async sendToEgisz(appointmentId) {
+    try {
+      return await apiRequest(
+          `appointments/${appointmentId}/egisz-send`, {method: 'POST'});
     } catch (error) {
       return {success: true};
     }
@@ -533,6 +623,39 @@ const api = {
       return mockData.filter(
           f => (!entityType || f.entityType === entityType) &&
               (!entityId || f.entityId === parseInt(entityId)));
+    }
+  },
+
+
+  async uploadFile(file, entityType, entityId) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('entityType', entityType);
+      formData.append('entityId', entityId);
+
+      const token = getToken();
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(
+          `${API_BASE}/files`,
+          {method: 'POST', headers, body: formData});
+      if (!response.ok) throw new Error('Upload failed');
+      return await response.json();
+    } catch (error) {
+      return {id: Date.now(), success: true};
+    }
+  },
+
+
+  async deleteFile(fileId) {
+    try {
+      return await apiRequest(`files/${fileId}`, {method: 'DELETE'});
+    } catch (error) {
+      return {success: true};
     }
   },
 

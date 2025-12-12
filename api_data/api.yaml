@@ -139,9 +139,32 @@ components:
         id: { type: integer }
         fullName: { type: string }
         phone: { type: string }
+        email: { type: string, nullable: true }
+        dob: { type: string, format: date, nullable: true }
+        gender: { type: string, enum: [MALE, FEMALE], nullable: true }
+        cardNumber: { type: string, nullable: true }
+        cardCreatedAt: { type: string, format: date-time, nullable: true }
+        organizationName: { type: string, nullable: true }
+        organizationCode: { type: string, nullable: true }
+        organizationAddress: { type: string, nullable: true }
+        registrationAddress: { type: object, nullable: true }
+        residenceAddress: { type: object, nullable: true }
+        localityType: { type: string, enum: [URBAN, RURAL], nullable: true }
+        citizenship: { type: string, nullable: true }
+        identityDocument: { type: object, nullable: true }
+        omsPolicy: { type: string, nullable: true }
+        omsSeries: { type: string, nullable: true }
+        snils: { type: string, nullable: true }
+        insuranceCompany: { type: string, nullable: true }
+        guardian: { type: object, nullable: true }
+        profession: { type: string, nullable: true }
+        workplace: { type: string, nullable: true }
         icons:
           type: array
           items: { type: string }
+        consents: { type: array, items: { type: object }, nullable: true }
+        visitCount: { type: integer, default: 0 }
+        lastVisitAt: { type: string, format: date-time, nullable: true }
 
     MedicalRecord:
       type: object
@@ -361,6 +384,208 @@ paths:
         "200":
           description: OK
 
+  /appointments/{id}/payment:
+    put:
+      tags: [Appointments]
+      summary: Update payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                total: { type: number }
+                paid: { type: number }
+                method: { type: string, nullable: true }
+                flags:
+                  $ref: "#/components/schemas/PaymentFlags"
+      responses:
+        "200":
+          description: OK
+
+  /appointments/{id}/status-history:
+    get:
+      tags: [Appointments]
+      summary: Get status change history
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status: { $ref: "#/components/schemas/AppointmentStatus" }
+                    changedAt: { type: string, format: date-time }
+                    changedBy: { type: integer }
+
+  /templates:
+    get:
+      tags: [MedicalRecords]
+      summary: Get templates
+      parameters:
+        - name: specialty
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    name: { type: string }
+                    specialty: { type: string, nullable: true }
+                    sections: { type: object }
+
+    post:
+      tags: [MedicalRecords]
+      summary: Save template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                specialty: { type: string, nullable: true }
+                sections: { type: object }
+      responses:
+        "201":
+          description: Created
+
+  /files:
+    get:
+      tags: [Files]
+      summary: Get files
+      parameters:
+        - name: entityType
+          in: query
+          required: true
+          schema: { type: string, enum: [APPOINTMENT, PATIENT] }
+        - name: entityId
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    title: { type: string }
+                    kind: { type: string }
+                    size: { type: integer }
+                    createdAt: { type: string, format: date-time }
+                    createdBy: { type: integer }
+                    downloadUrl: { type: string }
+                    previewUrl: { type: string }
+
+    post:
+      tags: [Files]
+      summary: Upload file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+                entityType: { type: string }
+                entityId: { type: integer }
+      responses:
+        "201":
+          description: Created
+
+  /files/{id}:
+    delete:
+      tags: [Files]
+      summary: Delete file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+
+  /files/{id}/download:
+    get:
+      tags: [Files]
+      summary: Download file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+
+  /files/{id}/preview:
+    get:
+      tags: [Files]
+      summary: Preview file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+
+  /appointments/{id}/sign:
+    post:
+      tags: [MedicalRecords]
+      summary: Sign medical record (ЭЦП)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+
+  /appointments/{id}/egisz-send:
+    post:
+      tags: [MedicalRecords]
+      summary: Send to ЕГИСЗ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+
   /patients:
     get:
       tags: [Patients]
@@ -395,6 +620,63 @@ paths:
       responses:
         "201":
           description: Created
+
+  /patients/{id}:
+    get:
+      tags: [Patients]
+      summary: Get patient details (form 025-У)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+
+    put:
+      tags: [Patients]
+      summary: Update patient (form 025-У)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Patient"
+      responses:
+        "200":
+          description: OK
+
+  /patients/{id}/icons:
+    post:
+      tags: [Patients]
+      summary: Add/remove patient icon
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iconId: { type: string }
+                action: { type: string, enum: [ADD, REMOVE] }
+      responses:
+        "200":
+          description: OK
 
   /inventory/items:
     get:

@@ -23,78 +23,282 @@
     <div id="header-placeholder"></div>
 
     <main class="l-main">
-        <section class="m-section">
-            <h2>Карточка записи</h2>
-            <div id="appointment-detail-app">
-                <div v-if="loading" class="m-preloader">Загрузка...</div>
-                <div v-else-if="error" class="m-error-message">{{ error }}</div>
-                <div v-else-if="appointment" class="m-appointment-detail">
-                    <div class="m-appointment-header">
-                        <h3>Запись #{{ appointment.id }}</h3>
-                        <div class="m-appointment-meta">
-                            <p><strong>Дата и время:</strong> {{ formatDateTime(appointment.start) }}</p>
-                            <p><strong>Статус:</strong> <span :class="'m-status-' + appointment.status.toLowerCase()">{{ getStatusText(appointment.status) }}</span></p>
-                        </div>
-                    </div>
-                    <div class="m-appointment-patient">
-                        <h4>Пациент</h4>
-                        <p><strong>ФИО:</strong> {{ appointment.patient?.fullName || 'Не указано' }}</p>
-                        <p><strong>Телефон:</strong> {{ appointment.patient?.phone || 'Не указано' }}</p>
-                        <p v-if="appointment.patient?.icons && appointment.patient.icons.length > 0">
-                            <strong>Пометки:</strong> <span>{{ patientIcons }}</span>
-                        </p>
-                        <p v-if="appointment.patient?.id">
-                            <a :href="'patient-detail.html?id=' + appointment.patient.id" class="m-link">Открыть карточку пациента</a>
-                        </p>
-                    </div>
-                    <div v-if="canViewFinance && appointment.payment" class="m-appointment-payment">
-                        <h4>Оплата</h4>
-                        <p><strong>Сумма:</strong> {{ appointment.payment.total || 0 }} ₽</p>
-                        <p><strong>Оплачено:</strong> {{ appointment.payment.paid || 0 }} ₽</p>
-                        <p v-if="appointment.payment.method"><strong>Способ:</strong> {{ appointment.payment.method }}</p>
-                        <div v-if="appointment.payment.flags" class="m-payment-flags">
-                            <span v-if="appointment.payment.flags.noCashbox" class="m-badge">Без кассы</span>
-                            <span v-if="appointment.payment.flags.payLater" class="m-badge">Оплата позже</span>
-                            <span v-if="appointment.payment.flags.partial" class="m-badge">Частичная оплата</span>
-                        </div>
-                    </div>
-                    <div v-if="canEditFinance" class="m-appointment-status-control">
-                        <h4>Изменение статуса</h4>
-                        <div class="m-status-buttons">
-                            <button @click="updateStatus('CONFIRMED')" class="m-button">Подтвердить</button>
-                            <button @click="updateStatus('ARRIVED')" class="m-button">Пришёл</button>
-                            <button @click="updateStatus('NO_SHOW')" class="m-button">Не пришёл</button>
-                            <button @click="updateStatus('CANCELED')" class="m-button">Отменить</button>
-                        </div>
-                    </div>
-                    <div v-if="(isDoctor || appointment.doctorId) && medicalRecord" class="m-appointment-medical">
-                        <h4>Медицинская запись</h4>
-                        <div v-if="medicalRecord && !medicalRecord.locked" class="m-medical-sections">
-                            <div v-if="medicalRecord.sections">
-                                <div><strong>Жалобы:</strong> {{ medicalRecord.sections.complaints || 'Не указано' }}</div>
-                                <div><strong>Анамнез:</strong> {{ medicalRecord.sections.anamnesis || 'Не указано' }}</div>
-                                <div><strong>Осмотр:</strong> {{ medicalRecord.sections.examination || 'Не указано' }}</div>
-                                <div v-if="medicalRecord.sections.diagnoses && medicalRecord.sections.diagnoses.length > 0">
-                                    <strong>Диагнозы:</strong>
-                                    <ul>
-                                        <li v-for="(d, idx) in medicalRecord.sections.diagnoses" :key="idx">{{ d.text }} ({{ d.code || '' }})</li>
-                                    </ul>
-                                </div>
-                                <div><strong>Назначения:</strong> {{ medicalRecord.sections.orders || 'Не указано' }}</div>
-                                <div><strong>Процедуры:</strong> {{ medicalRecord.sections.procedures || 'Не указано' }}</div>
-                                <div><strong>Эпикриз:</strong> {{ medicalRecord.sections.epicrisis || 'Не указано' }}</div>
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-section">
+                    <h2>Карточка записи</h2>
+                    <div id="appointment-detail-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else-if="appointment" class="m-appointment-detail">
+                            <!-- Backdate Lock Banner -->
+                            <div v-if="medicalRecord && medicalRecord.locked" class="m-lock-banner">
+                                <p><strong>⚠️ Редактирование заблокировано:</strong> {{ medicalRecord.lockReason || 'Истёк срок редактирования' }}</p>
                             </div>
-                            <p v-else>Медицинская запись пуста</p>
+
+                            <div class="m-appointment-header">
+                                <h3>Запись #{{ appointment.id }}</h3>
+                                <div class="m-appointment-meta">
+                                    <p><strong>Дата и время:</strong> {{ formatDateTime(appointment.start) }}</p>
+                                    <p><strong>Статус:</strong> <span :class="'m-status-' + appointment.status.toLowerCase()">{{ getStatusText(appointment.status) }}</span></p>
+                                </div>
+                            </div>
+
+                            <div class="m-appointment-patient">
+                                <h4>Пациент</h4>
+                                <p><strong>ФИО:</strong> {{ appointment.patient?.fullName || 'Не указано' }}</p>
+                                <p><strong>Телефон:</strong> {{ appointment.patient?.phone || 'Не указано' }}</p>
+                                <p v-if="appointment.patient?.icons && appointment.patient.icons.length > 0">
+                                    <strong>Пометки:</strong> <span>{{ patientIcons }}</span>
+                                </p>
+                                <p v-if="appointment.patient?.id">
+                                    <a :href="'patient-detail.html?id=' + appointment.patient.id" class="m-link">Открыть карточку пациента</a>
+                                </p>
+                            </div>
+
+                            <!-- Оплата -->
+                            <div v-if="canViewFinance && appointment.payment" class="m-appointment-payment">
+                                <h4>Оплата</h4>
+                                <div v-if="editingPayment" class="m-form-grid">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Сумма (₽)</label>
+                                        <input type="number" v-model.number="editPaymentData.total" class="m-input" min="0" step="0.01">
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Оплачено (₽)</label>
+                                        <input type="number" v-model.number="editPaymentData.paid" class="m-input" min="0" step="0.01">
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Способ оплаты</label>
+                                        <select v-model="editPaymentData.method" class="m-select">
+                                            <option value="">Не выбран</option>
+                                            <option value="CASH">Наличные</option>
+                                            <option value="CARD">Карта</option>
+                                            <option value="ONLINE">Онлайн</option>
+                                        </select>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">
+                                            <input type="checkbox" v-model="editPaymentData.flags.noCashbox"> Без кассы
+                                        </label>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">
+                                            <input type="checkbox" v-model="editPaymentData.flags.payLater"> Оплата позже
+                                        </label>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">
+                                            <input type="checkbox" v-model="editPaymentData.flags.partial"> Частичная оплата
+                                        </label>
+                                    </div>
+                                    <div class="m-form-actions">
+                                        <button @click="savePayment" class="m-button is-hoverable-button">Сохранить</button>
+                                        <button @click="cancelEditPayment" class="m-button is-hoverable-button">Отмена</button>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <p><strong>Сумма:</strong> {{ appointment.payment.total || 0 }} ₽</p>
+                                    <p><strong>Оплачено:</strong> {{ appointment.payment.paid || 0 }} ₽</p>
+                                    <p v-if="appointment.payment.method"><strong>Способ:</strong> {{ appointment.payment.method }}</p>
+                                    <div v-if="appointment.payment.flags" class="m-payment-flags">
+                                        <span v-if="appointment.payment.flags.noCashbox" class="m-badge">Без кассы</span>
+                                        <span v-if="appointment.payment.flags.payLater" class="m-badge">Оплата позже</span>
+                                        <span v-if="appointment.payment.flags.partial" class="m-badge">Частичная оплата</span>
+                                    </div>
+                                    <div v-if="canEditFinance" class="m-form-actions">
+                                        <button @click="startEditPayment" class="m-button is-hoverable-button">Редактировать</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Изменение статуса -->
+                            <div v-if="canEditFinance" class="m-appointment-status-control">
+                                <h4>Изменение статуса</h4>
+                                <div class="m-status-buttons">
+                                    <button @click="updateStatus('CONFIRMED')" class="m-button is-hoverable-button">Подтвердить</button>
+                                    <button @click="updateStatus('ARRIVED')" class="m-button is-hoverable-button">Пришёл</button>
+                                    <button @click="updateStatus('NO_SHOW')" class="m-button is-hoverable-button">Не пришёл</button>
+                                    <button @click="updateStatus('CANCELED')" class="m-button is-hoverable-button">Отменить</button>
+                                </div>
+                            </div>
+
+                            <!-- История статусов -->
+                            <div class="m-status-history">
+                                <h4>История статусов</h4>
+                                <div v-if="statusHistoryLoading" class="m-preloader">Загрузка...</div>
+                                <div v-else-if="statusHistory.length === 0">
+                                    <p>История отсутствует</p>
+                                </div>
+                                <div v-else class="m-timeline">
+                                    <div v-for="(item, idx) in statusHistory" :key="idx" class="m-timeline-item">
+                                        <div class="m-timeline-marker"></div>
+                                        <div class="m-timeline-content">
+                                            <p><strong>{{ getStatusText(item.status) }}</strong></p>
+                                            <p>{{ formatDateTime(item.changedAt) }}</p>
+                                            <p v-if="item.changedBy">Пользователь #{{ item.changedBy }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Медицинская запись -->
+                            <div v-if="(isDoctor || appointment.doctorId)" class="m-appointment-medical">
+                                <h4>Медицинская запись</h4>
+                                
+                                <!-- Статус подписи -->
+                                <div v-if="medicalRecord && medicalRecord.signature" class="m-signature-status">
+                                    <p><strong>Статус подписи:</strong> 
+                                        <span :class="medicalRecord.signature.status === 'SIGNED' ? 'm-status-signed' : 'm-status-not-signed'">
+                                            {{ medicalRecord.signature.status === 'SIGNED' ? '✓ Подписано' : '✗ Не подписано' }}
+                                        </span>
+                                    </p>
+                                    <p v-if="medicalRecord.signature.signedAt">
+                                        <strong>Дата подписания:</strong> {{ formatDateTime(medicalRecord.signature.signedAt) }}
+                                    </p>
+                                    <p v-if="medicalRecord.signature.signedBy">
+                                        <strong>Подписал:</strong> Пользователь #{{ medicalRecord.signature.signedBy }}
+                                    </p>
+                                </div>
+
+                                <div v-if="medicalRecord && !medicalRecord.locked && !editingMedical" class="m-medical-sections">
+                                    <div v-if="medicalRecord.sections">
+                                        <div class="m-medical-section">
+                                            <strong>Жалобы:</strong>
+                                            <p>{{ medicalRecord.sections.complaints || 'Не указано' }}</p>
+                                        </div>
+                                        <div class="m-medical-section">
+                                            <strong>Анамнез:</strong>
+                                            <p>{{ medicalRecord.sections.anamnesis || 'Не указано' }}</p>
+                                        </div>
+                                        <div class="m-medical-section">
+                                            <strong>Осмотр:</strong>
+                                            <p>{{ medicalRecord.sections.examination || 'Не указано' }}</p>
+                                        </div>
+                                        <div v-if="medicalRecord.sections.diagnoses && medicalRecord.sections.diagnoses.length > 0" class="m-medical-section">
+                                            <strong>Диагнозы:</strong>
+                                            <ul>
+                                                <li v-for="(d, idx) in medicalRecord.sections.diagnoses" :key="idx">
+                                                    {{ d.text }} <span v-if="d.code">({{ d.code }})</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="m-medical-section">
+                                            <strong>Назначения:</strong>
+                                            <p>{{ medicalRecord.sections.orders || 'Не указано' }}</p>
+                                        </div>
+                                        <div class="m-medical-section">
+                                            <strong>Процедуры:</strong>
+                                            <p>{{ medicalRecord.sections.procedures || 'Не указано' }}</p>
+                                        </div>
+                                        <div class="m-medical-section">
+                                            <strong>Эпикриз:</strong>
+                                            <p>{{ medicalRecord.sections.epicrisis || 'Не указано' }}</p>
+                                        </div>
+                                    </div>
+                                    <p v-else>Медицинская запись пуста</p>
+                                    <div class="m-form-actions">
+                                        <button @click="startEditMedical" class="m-button is-hoverable-button">Редактировать</button>
+                                        <button @click="loadTemplates" class="m-button is-hoverable-button">Выбрать шаблон</button>
+                                    </div>
+                                </div>
+
+                                <!-- Форма редактирования медицинской записи -->
+                                <div v-if="editingMedical && !medicalRecord?.locked" class="m-medical-edit-form">
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Шаблон</label>
+                                        <select v-model="selectedTemplate" @change="applyTemplate" class="m-select">
+                                            <option value="">Выбрать шаблон...</option>
+                                            <option v-for="template in templates" :key="template.id" :value="template.id">
+                                                {{ template.name }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Жалобы</label>
+                                        <textarea v-model="editMedicalData.sections.complaints" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Анамнез</label>
+                                        <textarea v-model="editMedicalData.sections.anamnesis" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Осмотр</label>
+                                        <textarea v-model="editMedicalData.sections.examination" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Диагнозы</label>
+                                        <div v-for="(diag, idx) in editMedicalData.sections.diagnoses" :key="idx" class="m-diagnosis-item">
+                                            <input type="text" v-model="diag.text" placeholder="Текст диагноза" class="m-input">
+                                            <input type="text" v-model="diag.code" placeholder="Код (МКБ)" class="m-input">
+                                            <button @click="removeDiagnosis(idx)" class="m-button">Удалить</button>
+                                        </div>
+                                        <button @click="addDiagnosis" class="m-button is-hoverable-button">Добавить диагноз</button>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Назначения</label>
+                                        <textarea v-model="editMedicalData.sections.orders" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Процедуры</label>
+                                        <textarea v-model="editMedicalData.sections.procedures" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-group">
+                                        <label class="m-form-label">Эпикриз</label>
+                                        <textarea v-model="editMedicalData.sections.epicrisis" class="m-textarea" rows="3"></textarea>
+                                    </div>
+                                    <div class="m-form-actions">
+                                        <button @click="saveMedicalRecord" class="m-button is-hoverable-button">Сохранить</button>
+                                        <button @click="saveAsTemplate" class="m-button is-hoverable-button">Сохранить как шаблон</button>
+                                        <button @click="cancelEditMedical" class="m-button is-hoverable-button">Отмена</button>
+                                    </div>
+                                </div>
+
+                                <p v-if="medicalRecord && medicalRecord.locked" class="m-locked-message">
+                                    {{ medicalRecord.lockReason || 'Редактирование закрыто' }}
+                                </p>
+                                <p v-else-if="!medicalRecord" class="m-no-record">
+                                    Медицинская запись отсутствует
+                                </p>
+                            </div>
+
+                            <!-- Файлы -->
+                            <div class="m-appointment-files">
+                                <h4>Файлы</h4>
+                                <div v-if="filesLoading" class="m-preloader">Загрузка...</div>
+                                <div v-else>
+                                    <div v-if="files.length === 0">
+                                        <p>Файлы отсутствуют</p>
+                                    </div>
+                                    <div v-else>
+                                        <div v-for="file in files" :key="file.id" class="m-file-item">
+                                            <p><strong>{{ file.title }}</strong> ({{ formatFileSize(file.size) }})</p>
+                                            <p>{{ formatDateTime(file.createdAt) }}</p>
+                                            <a :href="file.downloadUrl" class="m-link">Скачать</a>
+                                            <a :href="file.previewUrl" target="_blank" class="m-link">Предпросмотр</a>
+                                            <button @click="deleteFile(file.id)" class="m-button is-hoverable-button">Удалить</button>
+                                        </div>
+                                    </div>
+                                    <div class="m-file-upload">
+                                        <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;">
+                                        <button @click="$refs.fileInput.click()" class="m-button is-hoverable-button">Загрузить файл</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Передача в ЕГИСЗ -->
+                            <div v-if="canManualEgiszSend" class="m-egisz-section">
+                                <h4>Передача в ЕГИСЗ</h4>
+                                <p>Отправка медицинской записи в государственную систему</p>
+                                <button @click="sendToEgisz" class="m-button is-hoverable-button">Отправить в ЕГИСЗ</button>
+                            </div>
                         </div>
-                        <p v-else class="m-locked-message">{{ medicalRecord?.lockReason || 'Редактирование закрыто' }}</p>
                     </div>
-                    <div v-else-if="(isDoctor || appointment.doctorId)" class="m-appointment-medical">
-                        <h4>Медицинская запись</h4>
-                        <p>Медицинская запись отсутствует</p>
-                    </div>
-                </div>
+                </section>
             </div>
-        </section>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
     </main>
 
     <div id="footer-placeholder"></div>

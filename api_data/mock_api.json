@@ -105,15 +105,116 @@
       "id": 1,
       "fullName": "Иванов Иван Иванович",
       "phone": "+7 (999) 123-45-67",
+      "email": "ivanov@example.com",
+      "dob": "1990-01-15",
+      "gender": "MALE",
+      "cardNumber": "025-У-000001",
+      "cardCreatedAt": "2020-01-15T10:00:00Z",
+      "organizationName": "ООО \"Медицинский центр\"",
+      "organizationCode": "12345678",
+      "organizationAddress": "г. Москва, ул. Ленина, д. 10",
+      "registrationAddress": {
+        "region": "Московская область",
+        "district": "Московский район",
+        "city": "Москва",
+        "street": "ул. Ленина",
+        "house": "10",
+        "apartment": "25"
+      },
+      "residenceAddress": {
+        "region": "Московская область",
+        "district": "Московский район",
+        "city": "Москва",
+        "street": "ул. Ленина",
+        "house": "10",
+        "apartment": "25"
+      },
+      "localityType": "URBAN",
+      "citizenship": "РФ",
+      "identityDocument": {
+        "type": "PASSPORT",
+        "series": "4500",
+        "number": "123456",
+        "issuedBy": "УФМС г. Москвы",
+        "issuedAt": "2010-01-20"
+      },
+      "omsPolicy": "1234567890123456",
+      "omsSeries": "123",
+      "snils": "123-456-789-01",
+      "insuranceCompany": "ООО \"Страховая компания\"",
+      "guardian": null,
+      "profession": "Инженер",
+      "workplace": "ООО \"Технологии\"",
       "icons": ["ICON_VIP", "ICON_CALL"],
-      "dob": "1990-01-15"
+      "consents": [
+        {
+          "type": "MEDICAL_CARE",
+          "signedAt": "2020-01-15T10:00:00Z",
+          "signedBy": 1
+        }
+      ],
+      "visitCount": 12,
+      "lastVisitAt": "2025-12-12T09:00:00Z"
     },
     {
       "id": 2,
       "fullName": "Петрова Мария Сергеевна",
       "phone": "+7 (999) 234-56-78",
+      "email": "petrova@example.com",
+      "dob": "1985-05-20",
+      "gender": "FEMALE",
+      "cardNumber": "025-У-000002",
+      "cardCreatedAt": "2021-03-10T14:00:00Z",
+      "organizationName": "ООО \"Медицинский центр\"",
+      "organizationCode": "12345678",
+      "organizationAddress": "г. Москва, ул. Ленина, д. 10",
+      "registrationAddress": {
+        "region": "Московская область",
+        "district": "Московский район",
+        "city": "Москва",
+        "street": "ул. Парковая",
+        "house": "5",
+        "apartment": "12"
+      },
+      "residenceAddress": {
+        "region": "Московская область",
+        "district": "Московский район",
+        "city": "Москва",
+        "street": "ул. Парковая",
+        "house": "5",
+        "apartment": "12"
+      },
+      "localityType": "URBAN",
+      "citizenship": "РФ",
+      "identityDocument": {
+        "type": "PASSPORT",
+        "series": "4501",
+        "number": "234567",
+        "issuedBy": "УФМС г. Москвы",
+        "issuedAt": "2011-05-25"
+      },
+      "omsPolicy": "2345678901234567",
+      "omsSeries": "234",
+      "snils": "234-567-890-12",
+      "insuranceCompany": "ООО \"Страховая компания\"",
+      "guardian": null,
+      "profession": "Врач",
+      "workplace": "ГБУЗ \"Больница №1\"",
       "icons": [],
-      "dob": "1985-05-20"
+      "consents": [
+        {
+          "type": "MEDICAL_CARE",
+          "signedAt": "2021-03-10T14:00:00Z",
+          "signedBy": 1
+        },
+        {
+          "type": "DATA_PROCESSING",
+          "signedAt": "2021-03-10T14:00:00Z",
+          "signedBy": 1
+        }
+      ],
+      "visitCount": 5,
+      "lastVisitAt": "2025-12-12T10:00:00Z"
     }
   ],
   "appointments": [
@@ -360,5 +461,61 @@
         }
       ]
     }
-  ]
+  ],
+  "templates": [
+    {
+      "id": 1,
+      "name": "Шаблон невролога",
+      "specialty": "NEUROLOGY",
+      "sections": {
+        "complaints": "Жалобы на головную боль",
+        "anamnesis": "Анамнез заболевания",
+        "examination": "Неврологический статус:",
+        "diagnoses": [
+          {
+            "text": "Мигрень",
+            "code": "G43.0"
+          }
+        ],
+        "orders": "МРТ головного мозга",
+        "procedures": "",
+        "epicrisis": ""
+      }
+    },
+    {
+      "id": 2,
+      "name": "Шаблон терапевта",
+      "specialty": "THERAPY",
+      "sections": {
+        "complaints": "Жалобы",
+        "anamnesis": "Анамнез",
+        "examination": "Объективный статус:",
+        "diagnoses": [],
+        "orders": "ОАК, ОАМ",
+        "procedures": "",
+        "epicrisis": ""
+      }
+    }
+  ],
+  "statusHistory": {
+    "1": [
+      {
+        "status": "BOOKED",
+        "changedAt": "2025-12-10T08:00:00Z",
+        "changedBy": 1
+      }
+    ],
+    "2": [
+      {
+        "status": "BOOKED",
+        "changedAt": "2025-12-11T10:00:00Z",
+        "changedBy": 1
+      },
+      {
+        "status": "CONFIRMED",
+        "changedAt": "2025-12-11T14:00:00Z",
+        "changedBy": 2
+      }
+    ]
+  }
 }
