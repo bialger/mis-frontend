@@ -42,30 +42,163 @@
                                     </option>
                                 </select>
                             </label>
-                            <label>
-                                Дата:
-                                <input type="date" v-model="currentDate" class="m-input is-focusable">
+                            <label v-if="canSelectDoctor">
+                                Врач:
+                                <select v-model="currentDoctorId" class="m-select is-focusable">
+                                    <option v-for="doctor in doctors" :key="doctor.id" :value="doctor.id">
+                                        {{ doctor.name }}
+                                    </option>
+                                </select>
                             </label>
+                            <div class="m-calendar-navigation">
+                                <button @click="prevWeek" class="m-button is-hoverable-button"><</button>
+                                <button @click="goToToday" class="m-button is-hoverable-button">Сегодня</button>
+                                <button @click="nextWeek" class="m-button is-hoverable-button">></button>
+                            </div>
+                            <div class="m-calendar-month-title">
+                                {{ weekRange }}
+                            </div>
+                            <button class="m-button is-hoverable-button" @click="openWorkingHoursModal">
+                                Рабочее время
+                            </button>
                         </div>
 
                         <div id="schedule-content">
                             <div v-if="loading" class="m-preloader">Загрузка...</div>
                             <div v-else-if="error" class="m-error-message">{{ error }}</div>
-                            <div v-else-if="appointments.length === 0">
-                                <p>На выбранную дату нет записей</p>
-                            </div>
-                            <div v-else>
-                                <h3>Записи на {{ formatDateFull(currentDate) }}</h3>
-                                <div v-for="apt in appointments" :key="apt.id" class="m-schedule-slot" :data-appointment-id="apt.id">
-                                    <div class="m-schedule-slot-time">{{ formatTime(apt.start) }}</div>
-                                    <div class="m-schedule-slot-content">
-                                        <div class="m-schedule-slot-patient">{{ apt.patient?.fullName || 'Пациент не указан' }}</div>
-                                        <div class="m-schedule-slot-status" :class="'m-status-' + apt.status.toLowerCase()">
-                                            {{ getStatusText(apt.status) }}
-                                        </div>
-                                        <div class="m-schedule-slot-icons" v-html="apt.patient?.iconsEmoji || ''"></div>
+                            <div v-else class="m-calendar-wrapper">
+                                <div v-if="timeGridSlots.length === 0" class="m-error-message">Время работы филиала не задано или длительность слота некорректна.</div>
+                                <div v-else class="m-calendar-week-grid">
+                                    <!-- Заголовок с часами (пустая ячейка) -->
+                                    <div class="m-calendar-hour-header">Время</div>
+                                    
+                                    <!-- Заголовки дней недели -->
+                                    <div v-for="day in weekDays" :key="day.date" class="m-calendar-day-header"
+                                         :class="{ 'm-calendar-day-today': isToday(day.date) }">
+                                        <div class="m-calendar-day-name">{{ day.dayName }}</div>
+                                        <div class="m-calendar-day-number-week">{{ day.dayNumber }}</div>
                                     </div>
-                                    <a :href="'appointment-detail.html?id=' + apt.id" class="m-schedule-slot-link">Открыть</a>
+                                    
+                                    <!-- Строки со слотами по 30 минут -->
+                                    <template v-for="slotTime in timeGridSlots" :key="slotTime.minutes">
+                                        <div class="m-calendar-hour-cell">{{ slotTime.label }}</div>
+                                        <div v-for="day in weekDays" :key="`${day.date}-${slotTime.minutes}`" 
+                                             class="m-calendar-week-cell"
+                                             :class="{ 
+                                                'm-calendar-week-cell-today': isToday(day.date),
+                                                'm-calendar-week-cell-off': isDayOff(day.date)
+                                             }">
+                                            <template v-if="getSlotForCell(day.date, slotTime.minutes)">
+                                                <div class="m-calendar-slot"
+                                                     :class="{ 'm-calendar-slot-free': isSlotFree(getSlotForCell(day.date, slotTime.minutes)), 'm-calendar-slot-busy': !isSlotFree(getSlotForCell(day.date, slotTime.minutes)) }"
+                                                     @click="openCreateModal(getSlotForCell(day.date, slotTime.minutes))"
+                                                     :title="isSlotFree(getSlotForCell(day.date, slotTime.minutes)) ? 'Свободный слот - кликните для записи' : 'Занято'">
+                                                    <span class="m-calendar-slot-time">{{ formatSlotTime(getSlotForCell(day.date, slotTime.minutes)) }}</span>
+                                                    <span v-if="!isSlotFree(getSlotForCell(day.date, slotTime.minutes))" class="m-calendar-slot-busy-icon">?</span>
+                                                </div>
+                                            </template>
+                                            <div v-else-if="firstGridMinute === slotTime.minutes" class="m-calendar-slot m-calendar-slot-disabled">
+                                                {{ isDayOff(day.date) ? 'Нерабочий день' : 'Нет приёма' }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Модальное окно для создания записи -->
+                        <div v-if="showCreateModal" class="m-modal-overlay" @click.self="closeCreateModal">
+                            <div class="m-modal" @click.stop>
+                                <div class="m-modal-header">
+                                    <h3>Создать запись</h3>
+                                    <button @click="closeCreateModal" class="m-modal-close">?</button>
+                                </div>
+                                <div class="m-modal-body" v-if="selectedSlot">
+                                    <div class="m-modal-field">
+                                        <label>Время:</label>
+                                        <div>{{ formatSlotTime(selectedSlot) }}</div>
+                                    </div>
+                                    <div class="m-modal-field">
+                                        <label>Врач:</label>
+                                        <div>{{ doctors.find(d => d.id === currentDoctorId)?.name || 'Не выбран' }}</div>
+                                    </div>
+                                    <div class="m-modal-field">
+                                        <label>Пациент:</label>
+                                        <input type="text" v-model="searchQuery" placeholder="Поиск по имени или телефону" class="m-input is-focusable" style="margin-bottom: 0.5rem;">
+                                        <select v-model="selectedPatientId" class="m-select is-focusable" size="5" style="min-height: 150px;">
+                                            <option v-for="patient in filteredPatients" :key="patient.id" :value="patient.id">
+                                                {{ patient.fullName }} ({{ patient.phone }})
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="m-modal-field">
+                                        <label>Кабинет:</label>
+                                        <select v-model="selectedRoomId" class="m-select is-focusable">
+                                            <option v-for="room in rooms" :key="room.id" :value="room.id">
+                                                {{ room.name }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="m-modal-footer">
+                                    <button @click="closeCreateModal" class="m-button">Отмена</button>
+                                    <button @click="createAppointment(selectedPatientId, selectedRoomId)" 
+                                            :disabled="!selectedPatientId"
+                                            class="m-button m-button--primary is-hoverable-button">
+                                        Создать запись
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Модальное окно настроек рабочего времени -->
+                        <div v-if="showWorkingHoursModal" class="m-modal-overlay" @click.self="closeWorkingHoursModal">
+                            <div class="m-modal" @click.stop>
+                                <div class="m-modal-header">
+                                    <h3>Рабочее время врача</h3>
+                                    <button class="m-modal-close" @click="closeWorkingHoursModal">&times;</button>
+                                </div>
+                                <div class="m-modal-body" v-if="workingHours">
+                                    <div class="m-modal-field">
+                                        <label>Филиал</label>
+                                        <div>{{ branchWorkingHoursText }}</div>
+                                    </div>
+                                    <div class="m-modal-field">
+                                        <label>Длительность слота (мин)</label>
+                                        <input type="number" min="5" step="5" v-model.number="workingHours.slotDurationMin" class="m-input is-focusable" :disabled="!canEditWorkingHours">
+                                    </div>
+                                    <div class="m-working-hours-week">
+                                        <div class="m-working-hours-row" v-for="day in workingHours.schedule" :key="day.dayOfWeek">
+                                            <div class="m-working-hours-day">{{ getFullDayName(day.dayOfWeek) }}</div>
+                                            <label style="display: flex; align-items: center; gap: 0.35rem;">
+                                                <input type="checkbox" v-model="day.isWorking" :disabled="!canEditWorkingHours">
+                                                Рабочий день
+                                            </label>
+                                            <input type="time" v-model="day.startTime" class="m-input is-focusable" :disabled="!canEditWorkingHours || !day.isWorking">
+                                            <span>-</span>
+                                            <input type="time" v-model="day.endTime" class="m-input is-focusable" :disabled="!canEditWorkingHours || !day.isWorking">
+                                        </div>
+                                    </div>
+                                    <div class="m-working-hours-exceptions">
+                                        <div class="m-working-hours-exceptions__form">
+                                            <input type="date" v-model="dayOffDate" class="m-input is-focusable" :disabled="!canEditWorkingHours">
+                                            <input type="text" v-model="dayOffReason" placeholder="Причина (опционально)" class="m-input is-focusable" :disabled="!canEditWorkingHours">
+                                            <button class="m-button is-hoverable-button" @click="addDayOff" :disabled="!canEditWorkingHours || !dayOffDate">Добавить нерабочий день</button>
+                                        </div>
+                                        <div class="m-working-hours-exceptions__list" v-if="(workingHours.exceptions || []).length">
+                                            <div class="m-working-hours-exception" v-for="exception in workingHours.exceptions" :key="exception.date">
+                                                <div>
+                                                    <strong>{{ exception.date }}</strong>
+                                                    <span style="margin-left: 0.35rem;">{{ exception.reason || 'Нерабочий день' }}</span>
+                                                </div>
+                                                <button v-if="canEditWorkingHours" class="m-button is-hoverable-button" @click="removeDayOff(exception.date)">Убрать</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="m-modal-footer">
+                                    <button @click="closeWorkingHoursModal" class="m-button">Отмена</button>
+                                    <button @click="saveWorkingHours" :disabled="!canEditWorkingHours" class="m-button m-button--primary is-hoverable-button">Сохранить</button>
                                 </div>
                             </div>
                         </div>

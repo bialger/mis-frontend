@@ -12,39 +12,6 @@
     <link rel="stylesheet" href="css/module.css">
     <link rel="stylesheet" href="css/state.css">
     <link rel="stylesheet" href="css/responsive.css">
-    <style>
-        .l-login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem;
-        }
-        .m-login-card {
-            background: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-        .m-login-title {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-        }
-        .m-login-error {
-            background: #fee;
-            color: var(--danger-color);
-            padding: 0.75rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-        .m-login-error.is-visible {
-            display: block;
-        }
-    </style>
     <script src="js/api.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module" src="js/vue/login-app.js"></script>
@@ -86,7 +53,10 @@
             </div>
             <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--muted-color); text-align: center;">
                 <p>Для тестирования используйте:</p>
-                <p><strong>Логин:</strong> Главный врач Сидоров (или 3) - Глава клиник</p>
+                <p><strong>Логин:</strong> sidorov_head - Глава клиники</p>
+                <p style="margin-top: 0.75rem;">
+                    <a href="patient-booking.html" class="m-link">Онлайн-запись для пациентов</a>
+                </p>
             </div>
         </div>
     </div>

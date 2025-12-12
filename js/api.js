@@ -188,14 +188,15 @@ async function getFromMockApi(path) {
 const api = {
 
   async login(login, password) {
+    const findByLogin = (users) => {
+      if (!Array.isArray(users)) return null;
+      const normalized = (login || '').toLowerCase();
+      return users.find(u => (u.login && u.login.toLowerCase() === normalized));
+    };
+
     try {
       const response = await apiRequest('users', {method: 'GET'});
-      const user = Array.isArray(response) ?
-          response.find(
-              u => (u.name &&
-                    u.name.toLowerCase().includes(login.toLowerCase())) ||
-                  (u.id && u.id.toString() === login)) :
-          null;
+      const user = findByLogin(response);
 
       if (user) {
         const meData = await getFromMockApi('me');
@@ -222,10 +223,7 @@ const api = {
     } catch (error) {
       const mockData = await loadMockApi();
       if (mockData && mockData.users) {
-        const user = mockData.users.find(
-            u => (u.name &&
-                  u.name.toLowerCase().includes(login.toLowerCase())) ||
-                (u.id && u.id.toString() === login));
+        const user = findByLogin(mockData.users);
 
         if (user) {
           const meData = mockData.me && mockData.me[0] ? mockData.me[0] : {
@@ -925,14 +923,123 @@ const api = {
       if (from) params.push(`from=${encodeURIComponent(from)}`);
       if (to) params.push(`to=${encodeURIComponent(to)}`);
       const query = params.length > 0 ? '?' + params.join('&') : '';
-      const response = await apiRequest(`scheduleSlots${query}`);
-      return Array.isArray(response) ? response : [];
+      const response = await apiRequest(`schedule/slots${query}`);
+      return response;
     } catch (error) {
       const mockData = await getFromMockApi('scheduleSlots');
-      if (!mockData) return [];
-      return mockData.filter(
-          slot => (!doctorId || slot.doctorId === doctorId) &&
-              (!branchId || slot.branchId === branchId));
+      if (!mockData) return { slots: [] };
+      const slot = mockData.find(
+          s => (!doctorId || s.doctorId === doctorId) &&
+              (!branchId || s.branchId === branchId));
+      return slot || { slots: [] };
+    }
+  },
+
+  async getScheduleCalendar(doctorId, branchId, year, month) {
+    try {
+      const workingHours = await this.getDoctorWorkingHours(doctorId, branchId);
+      const branches = await this.getBranches();
+      const branch = branches.find(b => b.id === branchId);
+      const branchStart = branch?.startTime || '08:00';
+      const branchEnd = branch?.endTime || '20:00';
+      const slotDuration = Math.max(workingHours?.slotDurationMin || 30, 5);
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      const from = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+      const to = new Date(Date.UTC(year, month - 1, daysInMonth, 23, 59, 59, 999));
+      const appointments = await this.getAppointments(branchId, from.toISOString(), to.toISOString());
+      const doctorAppointments = (appointments || []).filter(a => a.doctorId === doctorId);
+
+      const toMinutes = (timeStr) => {
+        if (!timeStr || typeof timeStr !== 'string') return 0;
+        const [h, m] = timeStr.split(':').map(v => parseInt(v, 10));
+        return (h || 0) * 60 + (m || 0);
+      };
+
+      const days = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateObj = new Date(dateStr);
+        const dayOfWeek = dateObj.getDay();
+        const isException = (workingHours?.exceptions || []).some(ex => ex.date === dateStr);
+        const daySchedule = workingHours?.schedule?.find(s => s.dayOfWeek === dayOfWeek);
+        const slots = [];
+
+        if (!isException && daySchedule?.isWorking) {
+          const startMinutes = Math.max(toMinutes(branchStart), toMinutes(daySchedule.startTime));
+          const endMinutes = Math.min(toMinutes(branchEnd), toMinutes(daySchedule.endTime));
+
+          for (let minutes = startMinutes; minutes + slotDuration <= endMinutes; minutes += slotDuration) {
+            const slotStart = new Date(`${dateStr}T00:00:00`);
+            const slotEnd = new Date(`${dateStr}T00:00:00`);
+            slotStart.setMinutes(slotStart.getMinutes() + minutes);
+            slotEnd.setMinutes(slotEnd.getMinutes() + minutes + slotDuration);
+
+            const appointment = doctorAppointments.find(a => {
+              const start = new Date(a.start);
+              const end = new Date(a.end);
+              return start.getTime() <= slotStart.getTime() && end.getTime() > slotStart.getTime();
+            });
+
+            slots.push({
+              start: slotStart.toISOString(),
+              end: slotEnd.toISOString(),
+              free: !appointment,
+              appointmentId: appointment?.id
+            });
+          }
+        }
+        days.push({ date: dateStr, slots });
+      }
+
+      return { doctorId, branchId, year, month, days };
+    } catch (error) {
+      console.error('Ошибка построения календаря:', error);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      const days = Array.from({ length: daysInMonth }, (_, idx) => ({
+        date: `${year}-${String(month).padStart(2, '0')}-${String(idx + 1).padStart(2, '0')}`,
+        slots: []
+      }));
+      return { doctorId, branchId, year, month, days };
+    }
+  },
+
+  async getDoctorWorkingHours(doctorId, branchId) {
+    try {
+      const response = await apiRequest(`doctors/${doctorId}/working-hours?branchId=${branchId}`);
+      return response;
+    } catch (error) {
+      const mockData = await loadMockApi();
+      if (!mockData || !mockData.workingHours) {
+        return {
+          doctorId,
+          branchId,
+          slotDurationMin: 30,
+          schedule: []
+        };
+      }
+      const workingHours = mockData.workingHours.find(
+          wh => wh.doctorId === doctorId && wh.branchId === branchId
+      );
+      return workingHours || {
+        doctorId,
+        branchId,
+        slotDurationMin: 30,
+        schedule: []
+      };
+    }
+  },
+
+  async setDoctorWorkingHours(doctorId, workingHoursData) {
+    try {
+      const response = await apiRequest(`doctors/${doctorId}/working-hours`, {
+        method: 'PUT',
+        body: JSON.stringify(workingHoursData)
+      });
+      return response;
+    } catch (error) {
+      // В мок-режиме просто возвращаем данные
+      return { ...workingHoursData, doctorId };
     }
   }
 };

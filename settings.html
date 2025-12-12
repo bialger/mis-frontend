@@ -135,6 +135,8 @@
                                                 <th>Название</th>
                                                 <th>Адрес</th>
                                                 <th>Телефон</th>
+                                                <th>Начало работы</th>
+                                                <th>Конец работы</th>
                                                 <th>Действия</th>
                                             </tr>
                                         </thead>
@@ -144,6 +146,8 @@
                                                 <td>{{ branch.name }}</td>
                                                 <td>{{ branch.address || '-' }}</td>
                                                 <td>{{ branch.phone || '-' }}</td>
+                                                <td>{{ branch.startTime || '-' }}</td>
+                                                <td>{{ branch.endTime || '-' }}</td>
                                                 <td>
                                                     <button class="m-button is-hoverable-button" @click="openBranchModal(branch)">Редактировать</button>
                                                 </td>
@@ -308,8 +312,8 @@
                         </div>
 
                         <!-- Модальное окно пользователя -->
-                        <div class="m-modal" :class="{ 'is-visible': showUserModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showUserModal" class="m-modal" @click.self="closeUserModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingUser ? 'Редактировать пользователя' : 'Добавить пользователя' }}</h3>
                                     <button class="m-modal-close" @click="closeUserModal()">&times;</button>
@@ -358,8 +362,8 @@
                         </div>
 
                         <!-- Модальное окно филиала -->
-                        <div class="m-modal" :class="{ 'is-visible': showBranchModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showBranchModal" class="m-modal" @click.self="closeBranchModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingBranch ? 'Редактировать филиал' : 'Добавить филиал' }}</h3>
                                     <button class="m-modal-close" @click="closeBranchModal()">&times;</button>
@@ -376,6 +380,14 @@
                                     <label class="m-form-label">Телефон</label>
                                     <input type="text" v-model="branchForm.phone" class="m-input">
                                 </div>
+                                <div class="m-form-group">
+                                    <label class="m-form-label">Время работы</label>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <input type="time" v-model="branchForm.startTime" class="m-input" style="max-width: 150px;">
+                                        <span style="align-self: center;">—</span>
+                                        <input type="time" v-model="branchForm.endTime" class="m-input" style="max-width: 150px;">
+                                    </div>
+                                </div>
                                 <div class="m-form-actions">
                                     <button class="m-button is-hoverable-button" @click="saveBranch()">Сохранить</button>
                                     <button class="m-button is-hoverable-button" @click="closeBranchModal()">Отмена</button>
@@ -384,8 +396,8 @@
                         </div>
 
                         <!-- Модальное окно кабинета -->
-                        <div class="m-modal" :class="{ 'is-visible': showRoomModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showRoomModal" class="m-modal" @click.self="closeRoomModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingRoom ? 'Редактировать кабинет' : 'Добавить кабинет' }}</h3>
                                     <button class="m-modal-close" @click="closeRoomModal()">&times;</button>
@@ -412,8 +424,8 @@
                         </div>
 
                         <!-- Модальное окно услуги -->
-                        <div class="m-modal" :class="{ 'is-visible': showServiceModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showServiceModal" class="m-modal" @click.self="closeServiceModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingService ? 'Редактировать услугу' : 'Добавить услугу' }}</h3>
                                     <button class="m-modal-close" @click="closeServiceModal()">&times;</button>
@@ -444,8 +456,8 @@
                         </div>
 
                         <!-- Модальное окно шаблона -->
-                        <div class="m-modal" :class="{ 'is-visible': showTemplateModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showTemplateModal" class="m-modal" @click.self="closeTemplateModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingTemplate ? 'Редактировать шаблон' : 'Добавить шаблон' }}</h3>
                                     <button class="m-modal-close" @click="closeTemplateModal()">&times;</button>
@@ -499,8 +511,8 @@
                         </div>
 
                         <!-- Модальное окно значка -->
-                        <div class="m-modal" :class="{ 'is-visible': showIconModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showIconModal" class="m-modal" @click.self="closeIconModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>{{ editingIcon ? 'Редактировать значок' : 'Добавить значок' }}</h3>
                                     <button class="m-modal-close" @click="closeIconModal()">&times;</button>
@@ -531,8 +543,8 @@
                         </div>
 
                         <!-- Модальное окно SMS -->
-                        <div class="m-modal" :class="{ 'is-visible': showSmsModal }">
-                            <div class="m-modal-content">
+                        <div v-if="showSmsModal" class="m-modal" @click.self="closeSmsModal()">
+                            <div class="m-modal-content" @click.stop>
                                 <div class="m-modal-header">
                                     <h3>Настройка SMS интеграции</h3>
                                     <button class="m-modal-close" @click="closeSmsModal()">&times;</button>
