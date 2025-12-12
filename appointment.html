@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Self-hosted CRM система для медицинских клиник - запись на услуги">
+    <meta name="keywords" content="медицинская CRM, запись на прием, услуги, расписание">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Медицинская CRM - Записи на услуги</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/module.css">
+    <link rel="stylesheet" href="css/state.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/appointment-new-app.js"></script>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="l-main">
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <div id="appointment-app">
+                    <section class="m-section">
+                        <h2>Создание записи на услугу</h2>
+                        <p>Заполните форму для создания новой записи пациента на медицинскую услугу.</p>
+
+                        <form @submit.prevent="handleSubmit" class="m-appointment-form" novalidate>
+                            <div class="m-form-group">
+                                <label for="fullname" class="m-form-label">ФИО пациента <span
+                                        class="m-form-required">*</span></label>
+                                <input type="text" id="fullname" v-model="formData.fullname" class="m-input is-focusable"
+                                    required minlength="3" maxlength="100" pattern="[А-Яа-яЁёA-Za-z\s]+"
+                                    placeholder="Иванов Иван Иванович">
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="phone" class="m-form-label">Телефон пациента <span
+                                        class="m-form-required">*</span></label>
+                                <input type="tel" id="phone" v-model="formData.phone" class="m-input is-focusable" required
+                                    pattern="[\d\s\-\+\(\)]+" placeholder="+7 (999) 123-45-67">
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="email" class="m-form-label">Email пациента</label>
+                                <input type="email" id="email" v-model="formData.email" class="m-input is-focusable"
+                                    placeholder="example@mail.ru">
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="service" class="m-form-label">Услуга <span class="m-form-required">*</span></label>
+                                <select id="service" v-model="formData.service" class="m-select is-focusable" required>
+                                    <option value="">Выберите услугу</option>
+                                    <option v-for="service in services" :key="service.id" :value="service.id">
+                                        {{ service.name }} - {{ service.price }} ₽ ({{ service.durationMin }} мин)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="doctor" class="m-form-label">Врач <span class="m-form-required">*</span></label>
+                                <select id="doctor" v-model="formData.doctor" class="m-select is-focusable" required>
+                                    <option value="">Выберите врача</option>
+                                    <option value="Иванов Иван Иванович">Иванов Иван Иванович - Терапевт</option>
+                                    <option value="Петрова Мария Сергеевна">Петрова Мария Сергеевна - Кардиолог</option>
+                                    <option value="Сидоров Петр Александрович">Сидоров Петр Александрович - Невролог</option>
+                                    <option value="Козлова Анна Викторовна">Козлова Анна Викторовна - Педиатр</option>
+                                    <option value="Смирнов Дмитрий Олегович">Смирнов Дмитрий Олегович - Хирург</option>
+                                </select>
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="date" class="m-form-label">Дата приема <span
+                                        class="m-form-required">*</span></label>
+                                <input type="date" id="date" v-model="formData.date" :min="getMinDate()"
+                                    class="m-input is-focusable" required>
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="time" class="m-form-label">Время приема <span
+                                        class="m-form-required">*</span></label>
+                                <input type="time" id="time" v-model="formData.time" class="m-input is-focusable" required>
+                            </div>
+
+                            <div class="m-form-group">
+                                <label for="message" class="m-form-label">Комментарий</label>
+                                <textarea id="message" v-model="formData.message" class="m-textarea is-focusable"
+                                    maxlength="500" rows="4" placeholder="Дополнительная информация о записи..."></textarea>
+                            </div>
+
+                            <button type="submit" class="m-button is-hoverable-button is-active-button" :disabled="loading">
+                                {{ loading ? 'Создание...' : 'Создать запись' }}
+                            </button>
+                        </form>
+                    </section>
+
+                    <section class="m-section">
+                        <h2>Записи на услуги</h2>
+                        <div id="appointment-list" class="m-appointment-list">
+                            <div v-if="loading" class="m-preloader">Загрузка...</div>
+                            <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                            <div v-else-if="appointments.length === 0" class="m-appointment-empty">
+                                Пока нет записей. Создайте первую запись!
+                            </div>
+                            <article v-else v-for="apt in appointments" :key="apt.id" class="m-appointment-item is-hoverable"
+                                :data-id="apt.id">
+                                <div class="m-appointment-header">
+                                    <div class="m-appointment-author">
+                                        <h3 class="m-appointment-name">{{ apt.patient?.fullName || 'Пациент' }}</h3>
+                                        <span class="m-appointment-email">{{ apt.patient?.phone || '' }}</span>
+                                    </div>
+                                    <div class="m-appointment-meta">
+                                        <span class="m-appointment-date">{{ formatDate(apt.start) }}</span>
+                                        <span class="m-appointment-status" :class="'m-status-' + apt.status.toLowerCase()">
+                                            {{ getStatusText(apt.status) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="m-appointment-content">
+                                    <p class="m-appointment-service"><strong>Услуга:</strong> <span
+                                            class="m-appointment-service-name">Услуга</span></p>
+                                    <p class="m-appointment-doctor"><strong>Врач:</strong> <span
+                                            class="m-appointment-doctor-name">Врач</span></p>
+                                    <p class="m-appointment-datetime"><strong>Дата и время:</strong> <span
+                                            class="m-appointment-datetime-value">{{ formatDateTime(apt.start) }}</span></p>
+                                    <p class="m-appointment-phone"><strong>Телефон:</strong> <span
+                                            class="m-appointment-phone-value">{{ apt.patient?.phone || '' }}</span></p>
+                                </div>
+                                <div class="m-appointment-actions">
+                                    <a :href="'appointment-detail.html?id=' + apt.id"
+                                        class="m-button m-button--edit is-hoverable-button">Открыть</a>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

@@ -46,3 +46,239 @@
     display: block;
 }
 
+/* Preloader */
+.m-preloader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    min-height: 200px;
+}
+
+.m-preloader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--secondary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.m-preloader-text {
+    margin-top: 1rem;
+    color: var(--muted-color);
+}
+
+/* Error messages */
+.m-error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    min-height: 200px;
+    text-align: center;
+}
+
+.m-error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.m-error-text {
+    color: var(--danger-color);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.m-button--retry {
+    margin-top: 1rem;
+}
+
+/* Status badges */
+.m-status-booked,
+.m-status-confirmed,
+.m-status-arrived,
+.m-status-no_show,
+.m-status-canceled {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.m-status-booked {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.m-status-confirmed {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.m-status-arrived {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.m-status-no_show {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.m-status-canceled {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Dashboard styles */
+.m-dashboard-welcome {
+    margin-bottom: 2rem;
+}
+
+.m-dashboard-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.m-dashboard-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.m-appointments-list {
+    margin-top: 1rem;
+}
+
+.m-appointment-card {
+    padding: 1rem;
+    background: var(--light-color);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.m-appointment-card--online {
+    border-left: 4px solid var(--warning-color);
+}
+
+.m-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--secondary-color);
+    color: var(--white);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+.m-badge--new {
+    background: var(--success-color);
+}
+
+/* Schedule styles */
+.m-schedule-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.m-schedule-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.m-schedule-slot {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.m-schedule-slot-time {
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.m-schedule-slot-content {
+    flex: 1;
+}
+
+.m-schedule-slot-patient {
+    font-weight: 500;
+}
+
+.m-schedule-slot-status {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Patient card styles */
+.m-patients-search {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.m-patient-card {
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.m-patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.m-patient-icons {
+    font-size: 1.5rem;
+}
+
+/* Appointment detail styles */
+.m-appointment-detail > div {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.m-status-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.m-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+.m-link:hover {
+    text-decoration: underline;
+}
+

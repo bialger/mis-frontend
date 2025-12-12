@@ -16,7 +16,6 @@ function getPageLoadTime() {
   if (navigationTiming && navigationTiming.loadEventEnd) {
     return navigationTiming.loadEventEnd - navigationTiming.fetchStart;
   } else if (performance.timing && performance.timing.loadEventEnd) {
-    // Fallback на старый API
     return performance.timing.loadEventEnd - performance.timing.fetchStart;
   } else {
     return Date.now() - pageLoadStart;
@@ -71,16 +70,34 @@ function setActiveNavigationItem() {
       return;
     }
 
+
     const dataHref = link.getAttribute('data-href');
-    if (dataHref) {
+    const wasActive = link.classList.contains('is-active');
+
+    if (wasActive && dataHref) {
+      const newLink = link.cloneNode(true);
+      link.parentNode.replaceChild(newLink, link);
+
+      const restoredLink = newLink;
+      restoredLink.href = dataHref;
+      restoredLink.removeAttribute('data-href');
+      restoredLink.classList.remove('is-active');
+      restoredLink.removeAttribute('aria-current');
+      restoredLink.removeAttribute('tabindex');
+
+      link = restoredLink;
+    } else if (dataHref) {
       link.href = dataHref;
       link.removeAttribute('data-href');
     }
-    link.classList.remove('is-active');
+
+    if (!wasActive) {
+      link.classList.remove('is-active');
+    }
 
     const linkHref = link.getAttribute('href');
 
-    if (!linkHref) {
+    if (!linkHref || linkHref === '#' || linkHref === 'javascript:void(0)') {
       return;
     }
 
@@ -105,27 +122,56 @@ function setActiveNavigationItem() {
 
     if (shouldBeActive) {
       link.setAttribute('data-href', linkHref);
+      link.removeAttribute('href');
       link.classList.add('is-active');
+      link.setAttribute('aria-current', 'page');
+      link.setAttribute('tabindex', '-1');
+
+
+      const blockClick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      };
+
+
+      if (!link.hasAttribute('data-blocked')) {
+        link.addEventListener('click', blockClick, true);
+        link.addEventListener('click', blockClick, false);
+        link.onclick = blockClick;
+        link.setAttribute('data-blocked', 'true');
+      }
     }
   });
 }
+
+
+let navigationClickHandler = null;
 
 function setupNavigationClickHandler() {
   if (!isDOMReady()) {
     return;
   }
 
-  const navMenu = document.querySelector('.m-nav-menu');
-  if (navMenu) {
-    navMenu.addEventListener('click', function(e) {
-      const link = e.target.closest('a');
-      if (link && link.classList.contains('is-active')) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-    });
+
+  if (navigationClickHandler) {
+    document.removeEventListener('click', navigationClickHandler, true);
   }
+
+
+  navigationClickHandler = function(e) {
+    const link = e.target.closest('.m-nav-menu a');
+    if (link && link.classList.contains('is-active')) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
+  };
+
+
+  document.addEventListener('click', navigationClickHandler, true);
 }
 
 function init() {
@@ -145,5 +191,10 @@ init();
 addEventListenerSafe(window, 'load', function() {
   displayLoadTime();
   setActiveNavigationItem();
+  setupNavigationClickHandler();
 });
+
+
+window.setActiveNavigationItem = setActiveNavigationItem;
+window.setupNavigationClickHandler = setupNavigationClickHandler;
 })();

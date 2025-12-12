@@ -8,60 +8,101 @@
         content="Self-hosted CRM система для медицинских клиник - управление пациентами, записями, расписанием врачей">
     <meta name="keywords"
         content="медицинская CRM, управление клиникой, записи пациентов, расписание врачей, медицинская администрация">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>Медицинская CRM - Панель управления</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/module.css">
     <link rel="stylesheet" href="css/state.css">
     <link rel="stylesheet" href="css/responsive.css">
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
     <script src="js/main.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module" src="js/vue/dashboard-app.js"></script>
 </head>
 
 <body>
-    <header class="l-header">
-        <div class="l-header-container">
-            <h1>Медицинская CRM система</h1>
-            <nav>
-                <ul class="m-nav-menu">
-                    <li><a href="index.html" class="is-hoverable-link">Панель управления</a></li>
-                    <li><a href="patients.html" class="is-hoverable-link">Пациенты</a></li>
-                    <li><a href="doctors.html" class="is-hoverable-link">Врачи</a></li>
-                    <li><a href="schedule.html" class="is-hoverable-link">Расписание</a></li>
-                    <li><a href="reports.html" class="is-hoverable-link">Отчеты</a></li>
-                    <li><a href="settings.html" class="is-hoverable-link">Настройки</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="l-main">
-        <section class="m-dashboard">
-            <h2>Панель управления</h2>
-            <p>Добро пожаловать в <strong>медицинскую CRM систему</strong> для управления клиникой и пациентами.</p>
-            <p>Используйте навигацию для перехода к различным разделам системы.</p>
-        </section>
+        <div class="l-content-wrapper">
+            <div class="l-main-content">
+                <section class="m-dashboard">
+                    <h2>Панель управления</h2>
+                    <div id="dashboard-app">
+                        <div v-if="loading" class="m-preloader">Загрузка...</div>
+                        <div v-else-if="error" class="m-error-message">{{ error }}</div>
+                        <div v-else>
+                            <div v-if="role === 'DOCTOR'" class="m-dashboard-welcome">
+                                <h3>Добро пожаловать, {{ user?.name }}!</h3>
+                                <p>Сегодня у вас {{ todayAppointments.length }} {{ getAppointmentWord(todayAppointments.length) }}</p>
+                            </div>
+                            <div v-if="role === 'DOCTOR'" class="m-dashboard-section">
+                                <h3>Сегодня</h3>
+                                <div class="m-appointments-list">
+                                    <div v-if="todayAppointments.length === 0">
+                                        <p>Нет записей на сегодня</p>
+                                    </div>
+                                    <div v-else v-for="apt in todayAppointments" :key="apt.id" class="m-appointment-card">
+                                        <strong>{{ formatTime(apt.start) }}</strong> - {{ apt.patient?.fullName || 'Пациент' }}
+                                        <a :href="'appointment-detail.html?id=' + apt.id" class="m-link">Открыть</a>
+                                    </div>
+                                </div>
+                                <a href="schedule.html" class="m-button is-hoverable-button">Перейти к расписанию</a>
+                            </div>
+                            <div v-if="role === 'ADMIN'" class="m-dashboard-welcome">
+                                <h3>Добро пожаловать, {{ user?.name }}!</h3>
+                            </div>
+                            <div v-if="role === 'ADMIN'" class="m-dashboard-section">
+                                <h3>Онлайн-записи</h3>
+                                <div class="m-appointments-list">
+                                    <div v-if="onlineAppointments.length === 0">
+                                        <p>Нет новых онлайн-записей</p>
+                                    </div>
+                                    <div v-else v-for="apt in onlineAppointments" :key="apt.id" class="m-appointment-card m-appointment-card--online">
+                                        <strong>{{ formatTime(apt.start) }}</strong> - {{ apt.patient?.fullName || 'Пациент' }}
+                                        <span class="m-badge m-badge--new">Новая</span>
+                                        <a :href="'appointment-detail.html?id=' + apt.id" class="m-link">Открыть</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="role === 'ADMIN'" class="m-dashboard-section">
+                                <h3>Сегодня</h3>
+                                <p>Всего записей: {{ totalAppointments }}</p>
+                                <a href="schedule.html" class="m-button is-hoverable-button">Перейти к расписанию</a>
+                            </div>
+                            <div v-if="role === 'ADMIN'" class="m-dashboard-actions">
+                                <a href="schedule.html" class="m-button is-hoverable-button">Создать запись</a>
+                                <a href="patients.html" class="m-button is-hoverable-button">Найти пациента</a>
+                            </div>
+                            <div v-if="role === 'HEAD'" class="m-dashboard-welcome">
+                                <h3>Добро пожаловать, {{ user?.name }}!</h3>
+                                <p>Руководитель / Главный врач</p>
+                            </div>
+                            <div v-if="role === 'HEAD'" class="m-dashboard-section">
+                                <h3>KPI за период</h3>
+                                <p>Данные загружаются...</p>
+                            </div>
+                            <div v-if="role === 'HEAD'" class="m-dashboard-actions">
+                                <a href="reports.html" class="m-button is-hoverable-button">Отчёты</a>
+                                <a href="schedule.html" class="m-button is-hoverable-button">Расписание</a>
+                            </div>
+                            <div v-if="!role || (role !== 'DOCTOR' && role !== 'ADMIN' && role !== 'HEAD')" class="m-dashboard-welcome">
+                                <h3>Добро пожаловать, {{ user?.name }}!</h3>
+                                <p>Используйте навигацию для перехода к различным разделам системы.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="sidebar-placeholder"></div>
+        </div>
     </main>
 
-    <footer class="l-footer">
-        <div class="l-footer-container">
-            <div class="l-footer-info">
-                <h3>Системная информация</h3>
-                <address>
-                    <p>Версия системы: <strong>1.0.0</strong></p>
-                    <p>Последнее обновление: <strong>2025-10-03</strong></p>
-                    <p>Техническая поддержка: <strong>support@medcrm.local</strong></p>
-                    <p>Статус системы: <strong>Активна</strong></p>
-                </address>
-            </div>
-            <div class="l-footer-copyright">
-                <p>&copy; 2025 Self-hosted Medical CRM. Все права защищены.</p>
-            </div>
-        </div>
-        <div class="l-footer-banner is-hidden-mobile">
-            <h3>Специальное предложение: Обновление до профессиональной версии</h3>
-            <p>Получите расширенные возможности аналитики, интеграции и поддержки 24/7</p>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 </body>
 
 </html>
